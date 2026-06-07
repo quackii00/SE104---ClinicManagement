@@ -1,0 +1,31 @@
+# Visual Studio / .NET Core Cache & Configurations
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# WPF Frontend Build Outputs
+Frontend/bin/
+Frontend/obj/
+Frontend/App.g.cs
+Frontend/*.g.cs
+Frontend/*.g.i.cs
+Frontend/*.baml
+
+# ASP.NET Core Backend Build Outputs
+Backend/bin/
+Backend/obj/
+Backend/out/
+Backend/publish/
+
+# General .NET Build Folders (Fallback)
+bin/
+obj/
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log
