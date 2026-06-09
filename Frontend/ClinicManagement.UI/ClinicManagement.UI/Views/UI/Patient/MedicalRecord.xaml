@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="ClinicManagement.UI.Views.UI.Patient.MedicalRecord"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Patient"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="800">
+    <Grid>
+        <Border BorderBrush="{StaticResource BorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="15" 
+            Background="{StaticResource CardBrush}">
+
+            <Grid Margin="25">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <StackPanel>
+                    
+                    
+                <!-- Back -->
+                    <Button Content="←"
+                            FontSize="30"
+                            Width="40"
+                            Height="40"
+                            HorizontalAlignment="Left"
+                            Background="Transparent"
+                            BorderBrush="Transparent"/>
+
+                    <TextBlock Text="Phiếu khám bệnh"
+                           FontSize="22"
+                           HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+                <!-- Content -->
+                <ScrollViewer Grid.Row="1">
+
+                    <StackPanel Margin="20">
+
+                        <TextBlock Text="Họ tên"/>
+                        <TextBox Height="35"
+                                 Width="400"
+                                 IsReadOnly="True"
+                                 HorizontalAlignment="Left"
+                                 />
+
+                        <TextBlock Text="Giới tính"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                                 Width="400"
+                                IsReadOnly="True"
+                                HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Ngày sinh"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                              Width="400"
+                            IsReadOnly="True"
+                            HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Ngày khám"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                              Width="400"
+                            IsReadOnly="True"
+                            HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Triệu chứng"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                              Width="400"
+                            IsReadOnly="True"
+                            HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Chẩn đoán"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                              Width="400"
+                            IsReadOnly="True"
+                            HorizontalAlignment="Left"/>
+
+                        <TextBlock Text="Loại bệnh"
+                               Margin="0,10,0,0"/>
+                        <TextBox Height="35"
+                              Width="400"
+                            IsReadOnly="True"
+                            HorizontalAlignment="Left"/>
+
+                        <Separator Margin="0,20"/>
+
+                        <TextBlock Text="Đơn thuốc"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,15"/>
+
+                        <DataGrid ItemsSource="{Binding PrescriptionDetails}"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False">
+
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="Thuốc"
+                                                Width="*"
+                                                Binding="{Binding MedicineName}"/>
+
+                                <DataGridTextColumn Header="Đơn vị"
+                                                Width="120"
+                                                Binding="{Binding Unit}"/>
+
+                                <DataGridTextColumn Header="Số lượng"
+                                                Width="120"
+                                                Binding="{Binding Quantity}"/>
+
+                                <DataGridTextColumn Header="Cách dùng"
+                                                Width="200"
+                                                Binding="{Binding Usage}"/>
+
+                            </DataGrid.Columns>
+
+                        </DataGrid>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Grid>
+
+
+        </Border>
+    </Grid>
+</UserControl>

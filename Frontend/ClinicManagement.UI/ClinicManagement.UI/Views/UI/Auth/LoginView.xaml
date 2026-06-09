@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="ClinicManagement.UI.Views.UI.Auth.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Auth"
+             xmlns:components="clr-namespace:ClinicManagement.UI.Views.Components"
+             mc:Ignorable="d"
+             Background="{StaticResource PageBackgroundBrush}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+
+        <Border Width="820"
+                Height="550"
+                CornerRadius="15"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="1"
+                Background="{StaticResource CardBrush}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Panel -->
+
+                <Border Grid.Column="0"
+                        Background="{StaticResource SidebarBrush}"
+                        CornerRadius="15,0,0,15">
+
+                    <Grid>
+
+                        <!-- Sau này bỏ Logo vào đây -->
+
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+
+                            <TextBlock Text="CLINIC"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="Management System"
+                                       FontSize="16"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- Right Panel -->
+
+                <Grid Grid.Column="1">
+
+                    <StackPanel Width="260"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+
+                        <TextBlock Text="Email"
+                                   Margin="5,0"
+                                   FontSize="16"
+                                   Foreground="{StaticResource PrimaryTextBrush}"/>
+
+                        <Border Height="38"
+                                Margin="0,5,0,15"
+                                CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1">
+
+                            <TextBox BorderThickness="0"
+                                     Margin="8,2"
+                                     Background="Transparent"/>
+
+                        </Border>
+
+                        <TextBlock Text="Role"
+                                   Margin="5,0"
+                                   FontSize="16"
+                                   Foreground="{StaticResource PrimaryTextBrush}"/>
+
+                        <Border Height="38"
+                                Margin="0,5,0,15"
+                                CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1">
+
+                            <ComboBox BorderThickness="0"
+                                      Margin="5"
+                                      Background="Transparent">
+
+                                <ComboBoxItem Content="Admin"/>
+                                <ComboBoxItem Content="Doctor"/>
+
+                            </ComboBox>
+
+                        </Border>
+
+                        <TextBlock Text="Password"
+                                   Margin="5,0"
+                                   FontSize="16"
+                                   Foreground="{StaticResource PrimaryTextBrush}"/>
+
+                        <Border Height="38"
+                                Margin="0,5,0,25"
+                                CornerRadius="8"
+                                BorderBrush="{StaticResource BorderBrush}"
+                                BorderThickness="1">
+
+                            <PasswordBox BorderThickness="0"
+                                         Margin="8,2"
+                                         Background="Transparent"/>
+
+                        </Border>
+
+                        <Button Content="Signin"
+                                Width="95"
+                                Height="38"
+                                HorizontalAlignment="Center"
+                                Style="{StaticResource PrimaryButton}"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+</UserControl>

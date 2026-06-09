@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="ClinicManagement.UI.Views.Components.Sidebar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicManagement.UI.Views.Components"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="200">
+    <Grid>
+        <Border
+Background="{StaticResource SidebarBrush}"
+CornerRadius="15"
+BorderBrush="{StaticResource BorderBrush}"
+BorderThickness="1">
+
+            <Grid Margin="12">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="55"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="35"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Avatar -->
+
+                    <Ellipse
+            Width="40"
+            Height="40"
+            Stroke="{StaticResource BorderBrush}"
+            StrokeThickness="1"
+            Fill="{StaticResource CardBrush}"
+            VerticalAlignment="Top"/>
+
+                    <!-- User info -->
+
+                    <StackPanel
+            Grid.Column="1"
+            Margin="8,8,0,0">
+
+                        <TextBlock
+                Text="Username"
+                FontSize="16"
+                FontWeight="SemiBold"
+                Foreground="{StaticResource PrimaryTextBrush}"/>
+
+                        <TextBlock
+                Text="Role"
+                FontSize="12"
+                Foreground="{StaticResource SecondaryTextBrush}"/>
+
+                    </StackPanel>
+
+                    <!-- Home button -->
+
+                    <Button
+            Grid.Column="2"
+            Width="28"
+            Height="28"
+            VerticalAlignment="Top"
+            Background="Transparent"
+            BorderThickness="0"
+            FontSize="20"
+            Cursor="Hand"
+            Content="🏠"/>
+
+                </Grid>
+
+                <!-- Menu -->
+
+                <StackPanel
+        Grid.Row="1"
+        VerticalAlignment="Top"
+        Margin="0,40,0,0">
+
+                    <Button
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Danh sách khám"/>
+
+                    <Button
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Tra cứu"/>
+
+                    <Button
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Lập hóa đơn"/>
+
+                    <Button
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Lập báo cáo"/>
+
+                    <Button
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Cập nhật quy định"/>
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+    </Grid>
+</UserControl>
