@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="ClinicManagement.UI.Views.UI.Examination.MedicalHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="800">
+    <Grid>
+        <Border BorderBrush="{StaticResource BorderBrush}" 
+            BorderThickness="1" 
+            CornerRadius="15" 
+            Background="{StaticResource CardBrush}">
+
+            <Grid Margin="20">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Back -->
+                <Button Content="←"
+                    FontSize="30"
+                    Width="40"
+                    Height="40"
+                    HorizontalAlignment="Left"
+                    Background="Transparent"
+                    BorderBrush="Transparent"/>
+
+                <!-- Info -->
+                <StackPanel Grid.Row="1"
+                        Margin="20">
+
+                    <TextBlock Text="{Binding FullName}"
+                           FontSize="16"/>
+
+                    <TextBlock Text="{Binding Gender}"
+                           Margin="0,10,0,0"/>
+
+                    <TextBlock Text="{Binding BirthDate}"/>
+
+                </StackPanel>
+
+                <!-- History -->
+                <Border Grid.Row="2"
+                    Margin="0,20,0,0"
+                   >
+
+                    <DataGrid ItemsSource="{Binding Histories}"
+                          AutoGenerateColumns="False"
+                          Margin="10">
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn Header="Ngày khám"
+                                            Width="200"
+                                            Binding="{Binding ExaminationDate}"/>
+
+                            <DataGridTextColumn Header="Loại bệnh"
+                                            Width="*"
+                                            Binding="{Binding DiseaseType}"/>
+
+                            <DataGridTemplateColumn Width="80">
+
+                                <DataGridTemplateColumn.CellTemplate>
+
+                                    <DataTemplate>
+
+                                        <Button Content="Xem"
+                                            Command="{Binding DataContext.ViewDetailCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+
+                                    </DataTemplate>
+
+                                </DataGridTemplateColumn.CellTemplate>
+
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                </Border>
+
+            </Grid>
+
+
+
+        </Border>
+
+    </Grid>
+</UserControl>

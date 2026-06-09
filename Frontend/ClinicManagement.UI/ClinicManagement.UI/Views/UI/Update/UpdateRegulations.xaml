@@ -1,0 +1,228 @@
+﻿<UserControl x:Class="ClinicManagement.UI.Views.UI.Update.UpdateRegulations"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Update"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="800">
+    <Grid>
+        <Border BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                <StackPanel Margin="40">
+
+                    <!-- Title -->
+                    <TextBlock Text="Cập nhật quy định"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,30"/>
+
+                    <!-- Số bệnh nhân -->
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Số bệnh nhân tối đa / ngày"
+                               FontSize="14"/>
+
+                        <TextBox Width="220"
+                             Height="35"
+                             Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,0,0,15"/>
+
+                    <!-- Tiền khám -->
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Tiền khám"
+                               FontSize="14"/>
+
+                        <TextBox Width="220"
+                             Height="35"
+                             Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,0,0,15"/>
+
+                    <!-- Loại bệnh -->
+                    <StackPanel Margin="0,0,0,20">
+
+                        <TextBlock Text="Số loại bệnh"
+                               FontSize="14"/>
+
+                        <TextBox Width="220"
+                             Height="35"
+                             Margin="0,5,0,10"/>
+
+                        <TextBlock Text="Loại bệnh"
+                               FontSize="14"/>
+
+                        <ComboBox Width="220"
+                              Height="35"
+                              Margin="0,5,0,10"
+                              ItemsSource="{Binding DiseaseTypes}"
+                              SelectedItem="{Binding SelectedDiseaseType}"/>
+
+                        <ListBox Width="220"
+                             Height="100"
+                             ItemsSource="{Binding SelectedDiseaseTypes}">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <Button Content="X"
+                                            Width="24"
+                                            Height="24"
+                                            Margin="5,0,0,0"
+                                            DockPanel.Dock="Right"
+                                            Command="{Binding DataContext.RemoveDiseaseCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+
+                                        <TextBlock Text="{Binding}"
+                                               VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+
+                        <Button Content="+"
+                            Width="35"
+                            Height="35"
+                            FontSize="20"
+                            Foreground="Green"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            Command="{Binding AddDiseaseCommand}"/>
+
+                    </StackPanel>
+
+                    <Separator Margin="0,0,0,15"/>
+
+                    <!-- Loại thuốc -->
+                    <StackPanel Margin="0,0,0,20">
+
+                        <TextBlock Text="Số loại thuốc"
+                               FontSize="14"/>
+
+                        <TextBox Width="220"
+                             Height="35"
+                             Margin="0,5,0,10"/>
+
+                        <TextBlock Text="Loại thuốc"
+                               FontSize="14"/>
+
+                        <ComboBox Width="220"
+                              Height="35"
+                              Margin="0,5,0,10"
+                              ItemsSource="{Binding MedicineTypes}"
+                              SelectedItem="{Binding SelectedMedicineType}"/>
+
+                        <ListBox Width="220"
+                             Height="100"
+                             ItemsSource="{Binding SelectedMedicineTypes}">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <Button Content="X"
+                                            Width="24"
+                                            Height="24"
+                                            DockPanel.Dock="Right"
+                                            Margin="5,0,0,0"
+                                            Command="{Binding DataContext.RemoveMedicineCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+
+                                        <TextBlock Text="{Binding}"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+
+                        <Button Content="+"
+                            Width="35"
+                            Height="35"
+                            FontSize="20"
+                            Foreground="Green"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            Command="{Binding AddMedicineCommand}"/>
+
+                    </StackPanel>
+
+                    <Separator Margin="0,0,0,15"/>
+
+                    <!-- Cách dùng -->
+                    <StackPanel Margin="0,0,0,20">
+
+                        <TextBlock Text="Số cách dùng"
+                               FontSize="14"/>
+
+                        <TextBox Width="220"
+                             Height="35"
+                             Margin="0,5,0,10"/>
+
+                        <TextBlock Text="Cách dùng"
+                               FontSize="14"/>
+
+                        <ComboBox Width="220"
+                              Height="35"
+                              Margin="0,5,0,10"
+                              ItemsSource="{Binding UsageMethods}"
+                              SelectedItem="{Binding SelectedUsageMethod}"/>
+
+                        <ListBox Width="220"
+                             Height="100"
+                             ItemsSource="{Binding SelectedUsageMethods}">
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <Button Content="X"
+                                            Width="24"
+                                            Height="24"
+                                            DockPanel.Dock="Right"
+                                            Margin="5,0,0,0"
+                                            Command="{Binding DataContext.RemoveUsageMethodCommand,
+                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}"/>
+
+                                        <TextBlock Text="{Binding}"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+
+                        <Button Content="+"
+                            Width="35"
+                            Height="35"
+                            FontSize="20"
+                            Foreground="Green"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            Command="{Binding AddUsageMethodCommand}"/>
+
+                    </StackPanel>
+
+                    <!-- Button cập nhật -->
+                    <Button Content="Cập nhật"
+                        Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Right"
+                        Margin="0,30,0,0"
+                        />
+
+                </StackPanel>
+
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>
