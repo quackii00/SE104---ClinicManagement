@@ -3,117 +3,62 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.Components"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="200">
+             d:DesignHeight="600" d:DesignWidth="220">
     <Grid>
-        <Border
-Background="{StaticResource SidebarBrush}"
-CornerRadius="15"
-BorderBrush="{StaticResource BorderBrush}"
-BorderThickness="1">
-
+        <Border Background="{StaticResource SidebarBrush}" CornerRadius="15" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
             <Grid Margin="12">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Header -->
-
-                <Grid>
-
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="55"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="35"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Avatar -->
+                    <Ellipse Width="40" Height="40" Stroke="{StaticResource BorderBrush}" StrokeThickness="1" Fill="{StaticResource CardBrush}" VerticalAlignment="Top"/>
 
-                    <Ellipse
-            Width="40"
-            Height="40"
-            Stroke="{StaticResource BorderBrush}"
-            StrokeThickness="1"
-            Fill="{StaticResource CardBrush}"
-            VerticalAlignment="Top"/>
-
-                    <!-- User info -->
-
-                    <StackPanel
-            Grid.Column="1"
-            Margin="8,8,0,0">
-
-                        <TextBlock
-                Text="{Binding UserName}"
-                FontSize="16"
-                FontWeight="SemiBold"
-                Foreground="{StaticResource PrimaryTextBrush}"/>
-
-                        <TextBlock
-                Text="{Binding UserRole}"
-                FontSize="12"
-                Foreground="{StaticResource SecondaryTextBrush}"/>
-
+                    <StackPanel Grid.Column="1" Margin="8,8,0,0">
+                        <TextBlock Text="{Binding UserName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                        <TextBlock Text="{Binding UserRole}" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
                     </StackPanel>
 
-                    <!-- Home button -->
-
-                    <Button
-            Grid.Column="2"
-            Width="28"
-            Height="28"
-            VerticalAlignment="Top"
-            Background="Transparent"
-            BorderThickness="0"
-            FontSize="20"
-            Cursor="Hand"
-            Content="🏠"/>
-
+                    <Button Grid.Column="2" Width="28" Height="28" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" FontSize="20" Cursor="Hand" Content="🏠"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="Dashboard"/>
                 </Grid>
 
-                <!-- Menu -->
+                <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,40,0,0">
 
-                <StackPanel
-        Grid.Row="1"
-        VerticalAlignment="Top"
-        Margin="0,40,0,0">
+                    <Button Style="{StaticResource SidebarMenuButton}" Content="Danh sách khám"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="PatientList"/>
 
-                    <Button
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Danh sách khám"/>
+                    <Button Style="{StaticResource SidebarMenuButton}" Content="Tra cứu"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="PatientLookup"/>
 
-                    <Button
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Tra cứu"/>
+                    <Button Style="{StaticResource SidebarMenuButton}" Content="Lập hóa đơn"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="Invoice"/>
 
-                    <Button
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Lập hóa đơn"/>
+                    <Button Style="{StaticResource SidebarMenuButton}" Content="Lập báo cáo"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="Report"/>
 
-                    <Button
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Lập báo cáo"/>
-
-                    <Button
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Cập nhật quy định"/>
+                    <Button Style="{StaticResource SidebarMenuButton}" Content="Cập nhật quy định"
+                            Command="{Binding NavigationCommand}" 
+                            CommandParameter="Update"/>
                 </StackPanel>
 
-                <!-- Logout Button -->
-                <Button
-            Grid.Row="2"
-            Style="{StaticResource SidebarMenuButton}"
-            Content="Đăng xuất"
-            Foreground="Red"
-            Command="{Binding LogoutCommand}"
-            Margin="0,20,0,0"/>
-
+                <Button Grid.Row="2" Style="{StaticResource SidebarMenuButton}" Content="Đăng xuất" Foreground="Red" Margin="0,20,0,0"
+                        Command="{Binding LogoutCommand}"/>
             </Grid>
-
         </Border>
     </Grid>
 </UserControl>

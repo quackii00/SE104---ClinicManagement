@@ -8,29 +8,59 @@
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="800">
     <Grid Margin="10">
-        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="15" Background="{StaticResource CardBrush}">
+        <Border BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
             <Grid>
-                <Grid Grid.Column="1" Margin="50,30">
+                <Grid Margin="50,40">
                     <StackPanel Width="350" HorizontalAlignment="Center">
-                        <TextBlock Text="Tiếp nhận bệnh nhân" FontSize="20" HorizontalAlignment="Center" Margin="0,0,0,30" FontWeight="SemiBold"/>
-                        <TextBlock Text="Họ tên"/>
-                        <TextBox/>
-                        <TextBlock Text="Giới tính" Margin="0,15,0,5"/>
+
+                        <TextBlock Text="Tiếp nhận bệnh nhân" 
+                                   FontSize="20" 
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,0,0,35" 
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="Họ tên" Margin="0,0,0,5"/>
+                        <TextBox Text="{Binding HoTen, UpdateSourceTrigger=PropertyChanged}" 
+                                 VerticalContentAlignment="Center" 
+                                 Height="28"/>
+
+                        <TextBlock Text="Giới tính" Margin="0,20,0,8"/>
                         <StackPanel Orientation="Horizontal">
-                            <RadioButton Content="Nam" Margin="10,0"/>
-                            <RadioButton Content="Nữ" Margin="20,0"/>
+                            <RadioButton Content="Nam" IsChecked="{Binding IsNam}" Margin="10,0"/>
+                            <RadioButton Content="Nữ" IsChecked="{Binding IsNu}" Margin="25,0"/>
                         </StackPanel>
-                        <TextBlock Text="Ngày sinh" Margin="0,15,0,5"/>
-                        <TextBox/>
-                        <TextBlock Text="Số điện thoại" Margin="0,15,0,5"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox Width="240"/>
-                            <Button Content="Tìm" Width="60" Margin="10,0"/>
+
+                        <TextBlock Text="Ngày sinh" Margin="0,20,0,5"/>
+                        <TextBox Text="{Binding NgaySinhText, UpdateSourceTrigger=PropertyChanged}" 
+                                 ToolTip="Định dạng: dd/MM/yyyy hoặc yyyy" 
+                                 VerticalContentAlignment="Center" 
+                                 Height="28"/>
+
+                        <TextBlock Text="Địa chỉ" Margin="0,20,0,5"/>
+                        <TextBox Text="{Binding DiaChi, UpdateSourceTrigger=PropertyChanged}" 
+                                 VerticalContentAlignment="Center" 
+                                 Height="28"/>
+
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Center" 
+                                    Margin="0,45,0,0">
+                            <Button Content="Thêm" 
+                                    Style="{StaticResource PrimaryButton}" 
+                                    Margin="15,0" 
+                                    Width="90" 
+                                    Height="32"
+                                    Command="{Binding ThemCommand}"/>
+                            <Button Content="Hủy" 
+                                    Style="{StaticResource CancelButton}" 
+                                    Margin="15,0" 
+                                    Width="90" 
+                                    Height="32"
+                                    Command="{Binding HuyCommand}"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,50,0,0">
-                            <Button Content="Thêm" Style="{StaticResource PrimaryButton}" Margin="10,0"/>
-                            <Button Content="Hủy" Style="{StaticResource CancelButton}" Margin="10,0"/>
-                        </StackPanel>
+
                     </StackPanel>
                 </Grid>
             </Grid>
