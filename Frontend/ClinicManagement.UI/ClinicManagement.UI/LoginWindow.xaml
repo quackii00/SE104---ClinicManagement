@@ -1,0 +1,13 @@
+<Window x:Class="ClinicManagement.UI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:auth="clr-namespace:ClinicManagement.UI.Views.UI.Auth"
+        Title="Clinic Management - Login"
+        Height="600"
+        Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource PageBackgroundBrush}">
+    <Grid>
+        <auth:LoginView/>
+    </Grid>
+</Window>

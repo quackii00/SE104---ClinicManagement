@@ -18,6 +18,7 @@ BorderThickness="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <!-- Header -->
@@ -47,13 +48,13 @@ BorderThickness="1">
             Margin="8,8,0,0">
 
                         <TextBlock
-                Text="Username"
+                Text="{Binding UserName}"
                 FontSize="16"
                 FontWeight="SemiBold"
                 Foreground="{StaticResource PrimaryTextBrush}"/>
 
                         <TextBlock
-                Text="Role"
+                Text="{Binding UserRole}"
                 FontSize="12"
                 Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -101,6 +102,15 @@ BorderThickness="1">
             Style="{StaticResource SidebarMenuButton}"
             Content="Cập nhật quy định"/>
                 </StackPanel>
+
+                <!-- Logout Button -->
+                <Button
+            Grid.Row="2"
+            Style="{StaticResource SidebarMenuButton}"
+            Content="Đăng xuất"
+            Foreground="Red"
+            Command="{Binding LogoutCommand}"
+            Margin="0,20,0,0"/>
 
             </Grid>
 
