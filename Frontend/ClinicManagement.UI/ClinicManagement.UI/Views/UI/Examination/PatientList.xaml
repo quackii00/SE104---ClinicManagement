@@ -9,15 +9,13 @@
              d:DesignHeight="700"
              d:DesignWidth="800">
 
-    <Grid Margin="10">
-
+    <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="15"
                 Background="{StaticResource CardBrush}">
 
             <Grid Margin="30">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -25,54 +23,92 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Title -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                    <TextBlock Text="Danh sách khám"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,5"/>
 
-                <TextBlock Text="Danh sách khám"
-                           FontSize="20"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
-
-                <!-- Counter -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Ngày khám: " FontSize="13" Opacity="0.6"/>
+                        <TextBlock Text="{Binding NgayKhamText}" FontSize="13" FontWeight="Medium" Foreground="DeepSkyBlue"/>
+                    </StackPanel>
+                </StackPanel>
 
                 <TextBlock Grid.Row="1"
-                           Text="xx/Max"
+                           Text="{Binding CounterText}"
                            FontSize="16"
                            Foreground="Green"
                            Margin="10,0,0,15"/>
 
-                <!-- List -->
-
                 <Border Grid.Row="2"
-                        Width="500"
-                        Height="300"
+                        Width="750"
+                        Height="350"
                         HorizontalAlignment="Center"
-                        Padding="10"
+                        Padding="15,10"
                         CornerRadius="10"
                         BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="1">
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                        <StackPanel>
+                        <Grid Grid.Row="0" Margin="10,0,10,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
 
-                            <components:PatientListItem/>
+                            <TextBlock Grid.Column="0" Text="STT" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="Bold" Margin="10,0,5,0" Opacity="0.7"/>
+                            <TextBlock Grid.Column="2" Text="Giới Tính" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                            <TextBlock Grid.Column="3" Text="Năm Sinh" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                            <TextBlock Grid.Column="4" Text="Địa Chỉ" FontWeight="Bold" Margin="5,0" Opacity="0.7"/>
+                            <TextBlock Grid.Column="5" Text="Trạng Thái" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                        </Grid>
 
-                            <components:PatientListItem/>
+                        <ListBox Grid.Row="1" 
+                                 ItemsSource="{Binding UiPatientsList}"
+                                 SelectedItem="{Binding SelectedPatientItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch"
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
 
-                            <components:PatientListItem/>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Margin" Value="0,0,0,4"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border Background="#01000000" SnapsToDevicePixels="True">
+                                                    <ContentPresenter />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
 
-                            <components:PatientListItem/>
-
-                            <components:PatientListItem/>
-
-                        </StackPanel>
-
-                    </ScrollViewer>
-
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <components:PatientListItem />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
                 </Border>
-
-                <!-- Add button -->
 
                 <Button Grid.Row="3"
                         Content="Thêm bệnh nhân"
@@ -80,12 +116,9 @@
                         Height="35"
                         HorizontalAlignment="Right"
                         Margin="0,20,0,0"
-                        Style="{StaticResource PrimaryButton}"/>
-
+                        Style="{StaticResource PrimaryButton}"
+                        Command="{Binding GoToFormCommand}"/>
             </Grid>
-
         </Border>
-
     </Grid>
-
 </UserControl>

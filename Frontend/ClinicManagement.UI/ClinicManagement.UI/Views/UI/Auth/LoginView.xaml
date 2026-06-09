@@ -77,12 +77,22 @@
 
                             <TextBox BorderThickness="0"
                                      Margin="8,2"
-                                     Background="Transparent"/>
+                                     Background="Transparent"
+                                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                                     LostFocus="EmailTextBox_LostFocus"/>
 
                         </Border>
 
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Margin="5,2,5,5"
+                                   FontSize="12"
+                                   Foreground="Red"
+                                   TextWrapping="Wrap"
+                                   MinHeight="16"
+                                   Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
                         <TextBlock Text="Role"
-                                   Margin="5,0"
+                                   Margin="5,0,5,0"
                                    FontSize="16"
                                    Foreground="{StaticResource PrimaryTextBrush}"/>
 
@@ -94,10 +104,9 @@
 
                             <ComboBox BorderThickness="0"
                                       Margin="5"
-                                      Background="Transparent">
-
-                                <ComboBoxItem Content="Admin"/>
-                                <ComboBoxItem Content="Doctor"/>
+                                      Background="Transparent"
+                                      ItemsSource="{Binding Roles}"
+                                      SelectedItem="{Binding SelectedRole, UpdateSourceTrigger=PropertyChanged}">
 
                             </ComboBox>
 
@@ -116,7 +125,9 @@
 
                             <PasswordBox BorderThickness="0"
                                          Margin="8,2"
-                                         Background="Transparent"/>
+                                         Background="Transparent"
+                                         x:Name="PasswordBox"
+                                         PasswordChanged="PasswordBox_PasswordChanged"/>
 
                         </Border>
 
@@ -124,7 +135,44 @@
                                 Width="95"
                                 Height="38"
                                 HorizontalAlignment="Center"
-                                Style="{StaticResource PrimaryButton}"/>
+                                Style="{StaticResource PrimaryButton}"
+                                Command="{Binding SignInCommand}"
+                                IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
+
+                        <Grid Height="38"
+                              HorizontalAlignment="Center"
+                              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="Loading..."
+                                           Foreground="{StaticResource PrimaryTextBrush}"
+                                           VerticalAlignment="Center"
+                                           Margin="0,0,10,0"/>
+                                <Ellipse Width="12"
+                                         Height="12"
+                                         Fill="{StaticResource PrimaryTextBrush}"
+                                         RenderTransformOrigin="0.5, 0.5">
+                                    <Ellipse.RenderTransform>
+                                        <RotateTransform x:Name="LoadingSpinner"/>
+                                    </Ellipse.RenderTransform>
+                                    <Ellipse.Triggers>
+                                        <EventTrigger RoutedEvent="Loaded">
+                                            <BeginStoryboard>
+                                                <Storyboard RepeatBehavior="Forever">
+                                                    <DoubleAnimation
+                                                        Storyboard.TargetName="LoadingSpinner"
+                                                        Storyboard.TargetProperty="Angle"
+                                                        From="0"
+                                                        To="360"
+                                                        Duration="0:0:1"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Ellipse.Triggers>
+                                </Ellipse>
+                            </StackPanel>
+                        </Grid>
 
                     </StackPanel>
 

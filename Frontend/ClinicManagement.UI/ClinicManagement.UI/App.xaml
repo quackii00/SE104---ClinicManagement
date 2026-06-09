@@ -13,6 +13,8 @@
 
                 <ResourceDictionary Source="Views/Resources/Styles.xaml"/>
 
+                <ResourceDictionary Source="Views/Resources/Converters.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

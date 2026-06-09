@@ -2,39 +2,55 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:components="clr-namespace:ClinicManagement.UI.Views.Components"
+        xmlns:ui="clr-namespace:ClinicManagement.UI.Views.UI.Dashboard"
+        xmlns:vm="clr-namespace:ClinicManagement.UI.ViewModels" 
+        xmlns:exam="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
+        xmlns:patient="clr-namespace:ClinicManagement.UI.Views.UI.Patient"
         Title="Clinic Management"
         Height="700"
         Width="1000"
         WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="10">
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
 
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
+            <ui:Dashboard />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:PatientListViewModel}">
+            <exam:PatientList />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:PrescriptionViewModel}">
+            <patient:PrescriptionView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:RecievePatientViewModel}">
+            <patient:RecievePatient />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Margin="10">
         <Border BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="15"
                 Background="{StaticResource CardBrush}">
-
             <Grid>
-
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="180"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Sidebar cố định -->
+                <components:Sidebar Grid.Column="0" 
+                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
-                <components:Sidebar Grid.Column="0"/>
-
-                <!-- Nội dung thay đổi -->
-
-                <ContentControl
-                    x:Name="MainContent"
-                    Grid.Column="1"/>
-
+                <ContentControl x:Name="MainContent"
+                                Grid.Column="1"
+                                Content="{Binding CurrentView}"/>
             </Grid>
-
         </Border>
-
     </Grid>
-
 </Window>
