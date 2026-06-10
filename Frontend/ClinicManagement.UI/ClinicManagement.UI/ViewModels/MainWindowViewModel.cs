@@ -95,9 +95,6 @@ namespace ClinicManagement.UI.ViewModels
             }
         }
 
-        /// <summary>
-        /// 🌟 ĐÃ CẢI TIẾN: Thêm trường hợp chuyển view sang màn hình Tra cứu bệnh nhân nâng cao
-        /// </summary>
         public void Navigate(string targetView)
         {
             if (string.IsNullOrEmpty(targetView)) return;
@@ -110,8 +107,12 @@ namespace ClinicManagement.UI.ViewModels
                 case "PatientList":
                     CurrentView = new PatientListViewModel(this);
                     break;
-                case "PatientLookup": 
+                case "PatientLookup":
                     CurrentView = new PatientLookupViewModel(this);
+                    break;
+                case "Invoice":
+                    // Nếu bấm từ Sidebar mà chưa chọn bệnh nhân, điều hướng về PatientList để chọn
+                    CurrentView = new PatientListViewModel(this);
                     break;
                 default:
                     CurrentView = new DashboardViewModel();

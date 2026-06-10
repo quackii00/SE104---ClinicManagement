@@ -11,7 +11,6 @@ namespace ClinicManagement.UI.Services
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // --- DỮ LIỆU ĐỒNG BỘ ---
         private DanhSachKhamBenh _danhSachKhamHienTai;
         public DanhSachKhamBenh DanhSachKhamHienTai
         {
@@ -35,13 +34,16 @@ namespace ClinicManagement.UI.Services
 
         // --- THÔNG TIN AUTHENTICATION ---
         public string AuthToken { get; set; }
+
+        // 🌟 Thêm dòng này để ánh xạ mượt mà với code gọi ở các Service cũ
+        public string CurrentToken => AuthToken;
+
         public string CurrentUserName { get; set; }
         public string CurrentUserRole { get; set; }
         public string CurrentUserRoleCode { get; set; }
         public string LastUsedEmail { get; set; }
         public string LastUsedRole { get; set; }
 
-        // --- PHƯƠNG THỨC HỖ TRỢ ---
         public void TriggerDashboardUpdate()
         {
             OnPropertyChanged(nameof(DanhSachKhamHienTai));
