@@ -33,11 +33,8 @@ namespace ClinicManagement.UI.ViewModels
         public MainWindowViewModel()
         {
             _danhSachKhamService = new DanhSachKhamService();
-            // Tạm thời hardcode vai trò và tên người dùng, sau này sẽ lấy từ AppState hoặc dịch vụ xác thực
-            
-           UserRole = AppState.Instance.CurrentUserRole;
 
-            //UserRole = AppState.Instance.CurrentUserRole;
+            UserRole = AppState.Instance.CurrentUserRole;
             UserName = AppState.Instance.CurrentUserName;
 
             NavigationCommand = new RelayCommand(p => Navigate(p?.ToString()));
@@ -98,6 +95,9 @@ namespace ClinicManagement.UI.ViewModels
             }
         }
 
+        /// <summary>
+        /// 🌟 ĐÃ CẢI TIẾN: Thêm trường hợp chuyển view sang màn hình Tra cứu bệnh nhân nâng cao
+        /// </summary>
         public void Navigate(string targetView)
         {
             if (string.IsNullOrEmpty(targetView)) return;
@@ -109,6 +109,9 @@ namespace ClinicManagement.UI.ViewModels
                     break;
                 case "PatientList":
                     CurrentView = new PatientListViewModel(this);
+                    break;
+                case "PatientLookup": 
+                    CurrentView = new PatientLookupViewModel(this);
                     break;
                 default:
                     CurrentView = new DashboardViewModel();

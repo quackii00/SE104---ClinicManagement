@@ -24,7 +24,6 @@ namespace ClinicManagement.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // --- CÁC THUỘC TÍNH BINDING RA GIAO DIỆN XAML ---
         public Visibility IsAddButtonVisible
         {
             get => _isAddButtonVisible;
@@ -41,7 +40,6 @@ namespace ClinicManagement.UI.ViewModels
         public ICommand ThemCommand { get; }
         public ICommand HuyCommand { get; }
 
-        // --- HÀM KHỞI TẠO (CONSTRUCTOR) ---
         public RecievePatientViewModel(MainWindowViewModel mainViewModel, DanhSachKhamService danhSachKhamService)
         {
             _mainViewModel = mainViewModel;
@@ -52,7 +50,6 @@ namespace ClinicManagement.UI.ViewModels
             ThemCommand = new RelayCommand(async o => await ExecuteThemAsync());
             HuyCommand = new RelayCommand(async o => await ExecuteHuyAsync());
 
-            // Kiểm tra phân quyền ẩn/hiện nút thêm của tài khoản đang đăng nhập
             CheckUserRolePermissions();
         }
 
@@ -69,9 +66,6 @@ namespace ClinicManagement.UI.ViewModels
             }
         }
 
-        /// <summary>
-        /// Logic nút bấm Tra Cứu bệnh nhân cũ bằng TraCuuService chuyên trách
-        /// </summary>
         private async Task ExecuteTimBenhNhanAsync()
         {
             if (string.IsNullOrWhiteSpace(HoTen))
@@ -80,7 +74,16 @@ namespace ClinicManagement.UI.ViewModels
                 return;
             }
 
-            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen, null, null, null);
+            int? namSinh = null;
+            if (!string.IsNullOrWhiteSpace(NgaySinhText) && int.TryParse(NgaySinhText, out int parsedNamSinh))
+            {
+                namSinh = parsedNamSinh;
+            }
+
+            string gioiTinh = IsNam ? "Nam" : "Nữ";
+            DateTime ngayKhamChuan = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
+
+            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen.Trim(), namSinh, gioiTinh, ngayKhamChuan);
 
             if (list != null && list.Count > 0)
             {
@@ -92,16 +95,12 @@ namespace ClinicManagement.UI.ViewModels
             }
             else
             {
-                MessageBox.Show("Không tìm thấy hồ sơ cũ với tên này.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Không tìm thấy hồ sơ cũ khớp với các thông tin trên.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        /// <summary>
-        /// Logic nút bấm Thêm/Tiếp nhận bệnh nhân vào danh sách khám ngày hôm nay
-        /// </summary>
         private async Task ExecuteThemAsync()
         {
-            // 1. Validate cơ bản dữ liệu đầu vào
             if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(NgaySinhText))
             {
                 MessageBox.Show("Vui lòng điền đủ Họ tên và Năm sinh!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -114,7 +113,6 @@ namespace ClinicManagement.UI.ViewModels
                 return;
             }
 
-            // 2. Kiểm tra giới hạn phòng mạch (Quy định tối đa số lượng ca khám)
             var dsKham = AppState.Instance.DanhSachKhamHienTai;
             int maxPatients = AppState.Instance.SoLuongToiDaHeThong > 0 ? AppState.Instance.SoLuongToiDaHeThong : 40;
             if (dsKham != null && dsKham.ChiTietDanhSach != null && dsKham.ChiTietDanhSach.Count >= maxPatients)
@@ -123,14 +121,16 @@ namespace ClinicManagement.UI.ViewModels
                 return;
             }
 
-            // 3. Rẽ nhánh xử lý: Dùng chung TraCuuService quét kiểm tra trùng lặp hồ sơ trước khi thêm
-            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen, null, null, null);
+            string gioiTinh = IsNam ? "Nam" : "Nữ";
+            DateTime localToday = DateTime.Today;
+            DateTime ngayKhamChuan = new DateTime(localToday.Year, localToday.Month, localToday.Day, 0, 0, 0, DateTimeKind.Utc);
+
+            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen.Trim(), namSinh, gioiTinh, ngayKhamChuan);
             ChiTietKhamItemDto record = null;
 
             if (list != null && list.Count > 0)
             {
                 var target = list[0];
-                // Người cũ: Ép kiểu trực tiếp từ lịch sử tra cứu sang DTO kết quả tiếp nhận
                 record = new ChiTietKhamItemDto
                 {
                     MaBenhNhan = target.MaBenhNhan,
@@ -142,26 +142,26 @@ namespace ClinicManagement.UI.ViewModels
             }
             else
             {
-                // Người mới: Gửi gói tin POST lên API
-                // 🌟 SỬA ĐỔI QUYẾT ĐỊNH: Chỉ định cụ thể dạng ngày UTC để gỡ bỏ Giờ địa phương thừa gây lỗi 400 Bad Request trên Server
-                DateTime ngayKhamChuan = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
-
                 var request = new DangKyKhamRequest
                 {
-                    HoTen = HoTen,
-                    GioiTinh = IsNam ? "Nam" : "Nữ",
+                    HoTen = HoTen.Trim(),
+                    GioiTinh = gioiTinh,
                     NamSinh = namSinh,
                     DiaChi = DiaChi,
                     NgayKham = ngayKhamChuan
                 };
 
+                System.Diagnostics.Debug.WriteLine($"====================================");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] localToday: {localToday}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] ngayKhamChuan: {ngayKhamChuan.ToString("o")}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] request.NgayKham: {request.NgayKham:yyyy-MM-dd HH:mm:ss} Kind: {request.NgayKham.Kind}");
+                System.Diagnostics.Debug.WriteLine($"====================================");
+
                 record = await _danhSachKhamService.TiepNhanBenhNhanAsync(request);
             }
 
-            // 🌟 CHỐT CHẶN AN TOÀN: Nếu dính lỗi phân quyền (403) hoặc lỗi JSON (400) làm record bị null, đứng im giữ UI để đổi tài khoản
             if (record == null) return;
 
-            // 4. Cập nhật dữ liệu thật nhận về từ Server vào bộ nhớ đệm AppState để ListView hiển thị đồng bộ
             if (dsKham != null)
             {
                 if (dsKham.ChiTietDanhSach == null)
@@ -169,7 +169,7 @@ namespace ClinicManagement.UI.ViewModels
                     dsKham.ChiTietDanhSach = new System.Collections.Generic.List<ChiTietDanhSachKham>();
                 }
 
-                dsKham.ChiTietDanhSach.Add(new ChiTietDanhSachKham
+                var newItem = new ChiTietDanhSachKham
                 {
                     STT = record.STT > 0 ? record.STT : (dsKham.ChiTietDanhSach.Count + 1),
                     TrangThai = string.IsNullOrEmpty(record.TrangThai) ? "Chờ khám" : record.TrangThai,
@@ -181,15 +181,17 @@ namespace ClinicManagement.UI.ViewModels
                         NamSinh = record.NamSinh,
                         DiaChi = record.DiaChi
                     }
-                });
+                };
 
-                // Kích hoạt đồng bộ số liệu biểu đồ cho Dashboard màn hình chính
+                dsKham.ChiTietDanhSach.Add(newItem);
+
                 AppState.Instance.TriggerDashboardUpdate();
 
                 MessageBox.Show($"Tiếp nhận thành công bệnh nhân: {record.HoTen}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                // Điều hướng quay trở về màn hình danh sách khám bệnh hôm nay
-                _mainViewModel.CurrentView = new PatientListViewModel(_mainViewModel);
+                var targetPatientListVM = new PatientListViewModel(_mainViewModel);
+                _mainViewModel.CurrentView = targetPatientListVM;
+                await targetPatientListVM.LoadTodayPatientsDataAsync();
             }
         }
 

@@ -8,88 +8,144 @@
              d:DesignHeight="700" d:DesignWidth="800">
     <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
 
             <Grid Margin="20">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Back -->
-                <Button Content="←"
-                    FontSize="30"
-                    Width="40"
-                    Height="40"
-                    HorizontalAlignment="Left"
-                    Background="Transparent"
-                    BorderBrush="Transparent"/>
+                <Grid Grid.Row="0" Margin="0,0,0,15">
+                    <Button Content="←"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Width="40"
+                            Height="40"
+                            HorizontalAlignment="Left"
+                            VerticalContentAlignment="Center"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Cursor="Hand"
+                            Command="{Binding BackCommand}"/>
 
-                <!-- Info -->
-                <StackPanel Grid.Row="1"
-                        Margin="20">
+                    <TextBlock Text="Hồ Sơ Lịch Sử Khám Bệnh"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-                    <TextBlock Text="{Binding FullName}"
-                           FontSize="16"/>
+                <Border Grid.Row="1" 
+                        Background="#F0F4F8" 
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12" 
+                        Padding="20,15" 
+                        Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.8*"/>
+                            <ColumnDefinition Width="0.7*"/>
+                            <ColumnDefinition Width="0.7*"/>
+                            <ColumnDefinition Width="1.8*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{Binding Gender}"
-                           Margin="0,10,0,0"/>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Họ tên bệnh nhân" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding HoTen, FallbackValue='Nguyễn Văn A'}" FontSize="15" FontWeight="SemiBold" Foreground="#111111"/>
+                        </StackPanel>
 
-                    <TextBlock Text="{Binding BirthDate}"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Giới tính" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding GioiTinh, FallbackValue='Nam'}" FontSize="14" FontWeight="Medium"/>
+                        </StackPanel>
 
-                </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Năm sinh" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding NamSinh, FallbackValue='2000'}" FontSize="14" FontWeight="Medium"/>
+                        </StackPanel>
 
-                <!-- History -->
-                <Border Grid.Row="2"
-                    Margin="0,20,0,0"
-                   >
+                        <StackPanel Grid.Column="3" Margin="10,0,0,0">
+                            <TextBlock Text="Địa chỉ" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding DiaChi, FallbackValue='Chưa cập nhật địa chỉ'}" 
+                                       FontSize="14" 
+                                       FontWeight="Medium" 
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" 
+                        Background="#E6F2FF" 
+                        CornerRadius="15"
+                        Padding="10">
 
                     <DataGrid ItemsSource="{Binding Histories}"
-                          AutoGenerateColumns="False"
-                          Margin="10">
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              Background="White"
+                              RowHeight="40"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E0E0E0"
+                              BorderThickness="0"
+                              HeadersVisibility="Column">
+
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#D0E7FF"/>
+                                <Setter Property="Foreground" Value="#111111"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Padding" Value="12,8"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Style>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                                <ContentPresenter VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
 
                         <DataGrid.Columns>
-
-                            <DataGridTextColumn Header="Ngày khám"
-                                            Width="200"
-                                            Binding="{Binding ExaminationDate}"/>
-
-                            <DataGridTextColumn Header="Loại bệnh"
-                                            Width="*"
-                                            Binding="{Binding DiseaseType}"/>
-
-                            <DataGridTemplateColumn Width="80">
-
+                            <DataGridTemplateColumn Width="95">
                                 <DataGridTemplateColumn.CellTemplate>
-
                                     <DataTemplate>
-
                                         <Button Content="Xem"
-                                            Command="{Binding DataContext.ViewDetailCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-
+                                                Width="80"
+                                                Height="26"
+                                                Style="{StaticResource PrimaryButton}"
+                                                Command="{Binding DataContext.ViewPhieuCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"/>
                                     </DataTemplate>
-
                                 </DataGridTemplateColumn.CellTemplate>
-
                             </DataGridTemplateColumn>
 
+                            <DataGridTextColumn Header="Ngày khám"
+                                                Width="130"
+                                                Binding="{Binding NgayKham, StringFormat=\{0:dd/MM/yyyy\}}"/>
+
+                            <DataGridTextColumn Header="Chẩn đoán loại bệnh"
+                                                Width="1.5*"
+                                                Binding="{Binding TenLoaiBenh, FallbackValue='Chưa kết luận'}"/>
+
+                            <DataGridTextColumn Header="Triệu chứng"
+                                                Width="2*"
+                                                Binding="{Binding TrieuChung, FallbackValue='Không ghi nhận'}"/>
                         </DataGrid.Columns>
 
                     </DataGrid>
-
                 </Border>
-
             </Grid>
-
-
-
         </Border>
-
     </Grid>
 </UserControl>
