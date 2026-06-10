@@ -42,7 +42,7 @@ namespace ClinicManagement.UI.DTOs
     }
 
     /// <summary>
-    /// Chi tiết thông tin thuốc hiển thị (Dùng nếu cần xem lại đơn thuốc)
+    /// Chi tiết thông tin thuốc hiển thị (Dùng chung cho cả xem lại đơn thuốc và hiển thị hóa đơn)
     /// </summary>
     public class ChiTietToaThuocDto
     {
@@ -53,5 +53,7 @@ namespace ClinicManagement.UI.DTOs
         public string MoTaCachDung { get; set; } = string.Empty;
         public decimal DonGia { get; set; }
         public decimal ThanhTien { get; set; }
+
+        
     }
 }

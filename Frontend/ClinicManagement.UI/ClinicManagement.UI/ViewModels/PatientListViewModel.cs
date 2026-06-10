@@ -152,17 +152,28 @@ namespace ClinicManagement.UI.ViewModels
         private void ProcessPatientSelection(ChiTietDanhSachKham item)
         {
             string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
+
             if (role.Contains("bác sĩ") || role.Contains("doctor"))
             {
                 Dispose();
-
                 string maPhieuKhamCũ = !string.IsNullOrEmpty(item.MaPhieuKham) ? item.MaPhieuKham : string.Empty;
-
                 _mainViewModel.CurrentView = new PrescriptionViewModel(_mainViewModel, item.BenhNhan, maPhieuKhamCũ);
+            }
+            else if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("admin"))
+            {
+                if (!string.IsNullOrEmpty(item.MaPhieuKham) && item.TrangThai != "Chờ khám")
+                {
+                    Dispose();
+                    _mainViewModel.CurrentView = new InvoiceViewModel(_mainViewModel, item);
+                }
+                else
+                {
+                    MessageBox.Show($"Bệnh nhân '{item.BenhNhan.HoTen}' đang ở trạng thái chờ, bác sĩ chưa kết thúc ca khám để lập hóa đơn!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
             else
             {
-                MessageBox.Show("Chức năng lập phiếu khám chỉ dành cho Bác sĩ.", "Truy cập bị từ chối", MessageBoxButton.OK, MessageBoxImage.Stop);
+                MessageBox.Show("Tài khoản của bạn không có quyền thực hiện thao tác này.", "Truy cập bị từ chối", MessageBoxButton.OK, MessageBoxImage.Stop);
             }
         }
 

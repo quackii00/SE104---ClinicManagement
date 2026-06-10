@@ -39,6 +39,10 @@
         <DataTemplate DataType="{x:Type vm:MedicalHistoryViewModel}">
             <exam:MedicalHistoryView />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:InvoiceViewModel}">
+            <exam:InvoiceView />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Margin="10">

@@ -8,12 +8,11 @@
              d:DesignHeight="700" d:DesignWidth="800">
     <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
 
             <Grid Margin="25">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -23,115 +22,214 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Title -->
                 <TextBlock Grid.Row="0"
-                       Text="Hóa đơn"
-                       FontSize="32"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,25"/>
+                           Text="Hóa Đơn Thanh Toán"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"
+                           Margin="0,10,0,25"/>
 
-                <!-- Tiền khám -->
-                <StackPanel Grid.Row="1"
-                        Margin="10">
+                <Grid Grid.Row="1" Margin="10,0,10,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="280"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Text="Tiền khám"
-                           FontSize="18"/>
-
-                    <TextBox Width="260"
-                         Height="40"
-                         Margin="0,10,0,0"
-                         IsReadOnly="True"
-                         Text="{Binding ExaminationFee}"/>
-
-                </StackPanel>
-
-                <!-- Thuốc -->
-                <StackPanel Grid.Row="2"
-                        Margin="0,15,0,0">
-
-                    <TextBlock Text="Tiền thuốc"
-                           FontSize="18"
-                           Margin="10"/>
-
-                    <DataGrid ItemsSource="{Binding InvoiceMedicines}"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          HeadersVisibility="Column"
-                          Height="250"
-                          Margin="0,0,0,10">
-
-                        <DataGrid.Columns>
-
-                            <DataGridTextColumn Header="Tên thuốc"
-                                            Width="*"
-                                            Binding="{Binding MedicineName}"/>
-
-                            <DataGridTextColumn Header="Số lượng"
-                                            Width="120"
-                                            Binding="{Binding Quantity}"/>
-
-                            <DataGridTextColumn Header="Giá"
-                                            Width="150"
-                                            Binding="{Binding Amount,
-                                                              StringFormat=N0}"/>
-
-                        </DataGrid.Columns>
-
-                    </DataGrid>
-
-                </StackPanel>
-
-                <!-- Tổng thuốc -->
-                <StackPanel Grid.Row="3"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        Margin="0,10">
-
-                    <TextBlock Text="Tổng chi phí thuốc:"
-                           VerticalAlignment="Center"
-                           Margin="0,0,10,0"/>
-
-                    <TextBox Width="160"
-                         Height="35"
-                         IsReadOnly="True"
-                         Text="{Binding TotalMedicineCost}"/>
-
-                </StackPanel>
-
-                <!-- Separator -->
-                <Separator Grid.Row="4"
-                       Margin="0,20"/>
-
-                <!-- Tổng tiền -->
-                <StackPanel Grid.Row="5">
-
-                    <StackPanel Orientation="Horizontal">
-
-                        <TextBlock Text="Tổng tiền"
-                               VerticalAlignment="Center"
-                               FontSize="16"/>
-
-                        <TextBox Width="160"
-                             Margin="15,0"
-                             IsReadOnly="True"
-                             Text="{Binding TotalAmount}"/>
-
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,20,15">
+                        <TextBlock Text="Họ tên bệnh nhân"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Opacity="0.8"
+                                   Margin="0,0,0,6"/>
+                        <TextBox Height="35"
+                                 VerticalContentAlignment="Center"
+                                 Padding="8,0"
+                                 IsReadOnly="True"
+                                 FontWeight="SemiBold"
+                                 Text="{Binding CurrentPatientContext.BenhNhan.HoTen}"/>
                     </StackPanel>
 
-                    <Button Content="Thanh toán"
-                        Width="180"
-                        Height="45"
-                        Margin="0,25,0,0"
-                        HorizontalAlignment="Center"
-                        Background="{StaticResource PrimaryButtonBrush}"
-                        Command="{Binding PaymentCommand}"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,15">
+                        <TextBlock Text="Ngày khám"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Opacity="0.8"
+                                   Margin="0,0,0,6"/>
+                        <TextBox Height="35"
+                             VerticalContentAlignment="Center"
+                             Padding="8,0"
+                             IsReadOnly="True"
+                             Text="{Binding InvoiceDate, StringFormat=\{0:dd/MM/yyyy\}}"/>
+                    </StackPanel>
 
+                    <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Width="260">
+                        <TextBlock Text="Tiền khám"
+                                   FontSize="14"
+                                   FontWeight="Medium"
+                                   Opacity="0.8"
+                                   Margin="0,0,0,6"/>
+                        <TextBox Height="35"
+                                 VerticalContentAlignment="Center"
+                                 Padding="8,0"
+                                 IsReadOnly="True"
+                                 Text="{Binding ExaminationFee, StringFormat=\{0:N0\} VNĐ}"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="2" Margin="10,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" 
+                               Text="Chi tiết tiền thuốc"
+                               FontSize="14"
+                               FontWeight="Medium"
+                               Opacity="0.8"
+                               Margin="0,0,0,8"/>
+
+                    <Border Grid.Row="1" 
+                            Background="#E6F2FF" 
+                            CornerRadius="10"
+                            Padding="8">
+
+                        <DataGrid ItemsSource="{Binding InvoiceMedicines}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="True"
+                                  Background="White"
+                                  RowHeight="38"
+                                  GridLinesVisibility="Horizontal"
+                                  HorizontalGridLinesBrush="#E0E0E0"
+                                  BorderThickness="0"
+                                  HeadersVisibility="Column">
+
+                            <DataGrid.Resources>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Style.Resources>
+                                        <VisualBrush x:Key="HeaderBrush"/>
+                                    </Style.Resources>
+                                    <Setter Property="Background" Value="#D0E7FF"/>
+                                    <Setter Property="Foreground" Value="#111111"/>
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="Padding" Value="12,8"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                </Style>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Padding" Value="10,0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="DataGridCell">
+                                                <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGrid.Resources>
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Tên thuốc"
+                                                    Width="*"
+                                                    Binding="{Binding TenThuoc}">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Margin" Value="5,0,0,0"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Số lượng"
+                                                    Width="120"
+                                                    Binding="{Binding SoLuong}">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="Đơn giá"
+                                                    Width="150"
+                                                    Binding="{Binding ThanhTien, StringFormat=\{0:N0\} VNĐ}">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="HorizontalAlignment" Value="Right"/>
+                                            <Setter Property="Margin" Value="0,0,10,0"/>
+                                        </Style>
+                                    </DataGridTextColumn.ElementStyle>
+                                </DataGridTextColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
+
+                <StackPanel Grid.Row="3"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0,12,10,12">
+                    <TextBlock Text="Tổng chi phí thuốc:"
+                               FontWeight="Medium"
+                               VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
+                    <TextBox Width="180"
+                             Height="35"
+                             VerticalContentAlignment="Center"
+                             Padding="8,0"
+                             HorizontalContentAlignment="Right"
+                             IsReadOnly="True"
+                             Text="{Binding TotalMedicineCost, StringFormat=\{0:N0\} VNĐ}"/>
                 </StackPanel>
 
+                <Separator Grid.Row="4"
+                           Margin="10,10,10,15"
+                           BorderBrush="{StaticResource BorderBrush}"/>
+
+                <Grid Grid.Row="5" Margin="10,0,10,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Right">
+                        <TextBlock Text="Tổng tiền thanh toán:"
+                                   FontSize="16"
+                                   FontWeight="Bold"
+                                   Foreground="Crimson"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,15,0"/>
+                        <TextBox Width="180"
+                                 Height="38"
+                                 FontSize="15"
+                                 FontWeight="Bold"
+                                 Foreground="Crimson"
+                                 VerticalContentAlignment="Center"
+                                 Padding="8,0"
+                                 HorizontalContentAlignment="Right"
+                                 IsReadOnly="True"
+                                 Text="{Binding TotalAmount, StringFormat=\{0:N0\} VNĐ}"/>
+                    </StackPanel>
+
+                    <Button Grid.Row="1"
+                            Content="Thanh toán hóa đơn"
+                            Width="200"
+                            Height="42"
+                            Margin="0,25,0,5"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding PaymentCommand}"/>
+                </Grid>
             </Grid>
-
-
         </Border>
-
     </Grid>
 </UserControl>
