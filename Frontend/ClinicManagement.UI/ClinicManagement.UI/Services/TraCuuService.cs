@@ -20,11 +20,14 @@ namespace ClinicManagement.UI.Services
         /// GET: api/tracuu/benhnhan?hoTen=...&namSinh=...&gioiTinh=...&ngayKham=yyyy-MM-dd
         /// Tra cứu nâng cao danh sách bệnh nhân dựa theo các bộ lọc
         /// </summary>
+        /// <summary>
+        /// GET: api/tracuu/benhnhan?hoTen=...&namSinh=...&gioiTinh=...&ngayKham=yyyy-MM-dd
+        /// 🌟 ĐÃ KHỚP CỨNG BACKEND: Chỉ truyền đúng 4 tham số qua query string
+        /// </summary>
         public async Task<List<TraCuuBenhNhanResultDto>> TraCuuBenhNhanAsync(string? hoTen, int? namSinh, string? gioiTinh, DateTime? ngayKham)
         {
             try
             {
-                // 1. Tạo danh sách các tham số truy vấn (Query parameters)
                 var queryParams = new List<string>();
 
                 if (!string.IsNullOrWhiteSpace(hoTen))
@@ -36,21 +39,18 @@ namespace ClinicManagement.UI.Services
                 if (!string.IsNullOrWhiteSpace(gioiTinh))
                     queryParams.Add($"gioiTinh={Uri.EscapeDataString(gioiTinh)}");
 
-                // 🌟 CHUẨN HÓA ĐỊNH DẠNG NGÀY: Đảm bảo đổi DateTime sang chuỗi yyyy-MM-dd để Server không parse lỗi format
                 if (ngayKham.HasValue)
                 {
-                    string formattedDate = ngayKham.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    string formattedDate = ngayKham.Value.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
                     queryParams.Add($"ngayKham={formattedDate}");
                 }
 
-                // 2. Ghép nối thành URL hoàn chỉnh
                 string url = "tracuu/benhnhan";
                 if (queryParams.Count > 0)
                 {
                     url += "?" + string.Join("&", queryParams);
                 }
 
-                // 3. Gọi hàm GET từ lớp cha BaseApiService
                 return await GetAsync<List<TraCuuBenhNhanResultDto>>(url) ?? new List<TraCuuBenhNhanResultDto>();
             }
             catch (Exception ex)

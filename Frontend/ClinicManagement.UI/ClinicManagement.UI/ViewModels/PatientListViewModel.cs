@@ -26,7 +26,6 @@ namespace ClinicManagement.UI.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // --- CÁC THUỘC TÍNH BINDING RA GIAO DIỆN XAML ---
         public string CounterText { get => _counterText; set { _counterText = value; OnPropertyChanged(); } }
         public string NgayKhamText { get => _ngayKhamText; set { _ngayKhamText = value; OnPropertyChanged(); } }
         public ObservableCollection<ChiTietDanhSachKham> UiPatientsList { get => _uiPatientsList; set { _uiPatientsList = value; OnPropertyChanged(); } }
@@ -53,7 +52,6 @@ namespace ClinicManagement.UI.ViewModels
         public ICommand XoaBenhNhanCommand { get; }
         public ICommand RefreshCommand { get; }
 
-        // --- HÀM KHỞI TẠO (CONSTRUCTOR) ---
         public PatientListViewModel(MainWindowViewModel mainViewModel)
         {
             _mainViewModel = mainViewModel;
@@ -65,14 +63,12 @@ namespace ClinicManagement.UI.ViewModels
 
             AppState.Instance.PropertyChanged += OnAppStatePropertyChanged;
 
-            // Nạp giao diện nhanh từ dữ liệu đệm cũ của AppState nếu có
             RefreshUI();
 
-            // Luồng tự động ngầm: Gọi API lấy dữ liệu thực tế
             _ = LoadTodayPatientsDataAsync();
         }
 
-        private async Task LoadTodayPatientsDataAsync()
+        public async Task LoadTodayPatientsDataAsync()
         {
             try
             {
@@ -98,7 +94,7 @@ namespace ClinicManagement.UI.ViewModels
                         {
                             STT = item.STT,
                             TrangThai = string.IsNullOrEmpty(item.TrangThai) ? "Chờ khám" : item.TrangThai,
-                            MaPhieuKham = item.MaPhieuKham, // 🌟 Nhận lại mã phiếu khám từ Server nếu ca này đã khám
+                            MaPhieuKham = item.MaPhieuKham,
                             BenhNhan = new BenhNhan
                             {
                                 MaBenhNhan = item.MaBenhNhan,
@@ -153,9 +149,6 @@ namespace ClinicManagement.UI.ViewModels
             }
         }
 
-        /// <summary>
-        /// 🌟 ĐÃ CẢI TIẾN: Rẽ nhánh thông minh khi Bác sĩ click chọn dòng bệnh nhân
-        /// </summary>
         private void ProcessPatientSelection(ChiTietDanhSachKham item)
         {
             string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
@@ -163,7 +156,6 @@ namespace ClinicManagement.UI.ViewModels
             {
                 Dispose();
 
-                // 🚀 TRUYỀN THÊM tham số MaPhieuKham sang màn hình Kê đơn (nếu chưa khám thì truyền chuỗi rỗng)
                 string maPhieuKhamCũ = !string.IsNullOrEmpty(item.MaPhieuKham) ? item.MaPhieuKham : string.Empty;
 
                 _mainViewModel.CurrentView = new PrescriptionViewModel(_mainViewModel, item.BenhNhan, maPhieuKhamCũ);

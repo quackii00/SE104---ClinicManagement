@@ -11,6 +11,7 @@ using ClinicManagement.UI.Models;
 using ClinicManagement.UI.DTOs;
 using ClinicManagement.UI.Services;
 
+
 namespace ClinicManagement.UI.ViewModels
 {
     public class PrescriptionViewModel : INotifyPropertyChanged
@@ -20,10 +21,10 @@ namespace ClinicManagement.UI.ViewModels
         private readonly PhieuKhamService _phieuKhamService;
         private readonly DanhMucService _danhMucService;
         private readonly string _maPhieuKhamHienTai;
+        private readonly object _previousView;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // --- BINDING PROPERTIES ---
         public string PatientName => _benhNhanHienTai?.HoTen ?? "Không rõ";
         public string NgayKhamText { get; set; } = DateTime.Today.ToString("dd/MM/yyyy");
 
@@ -46,7 +47,6 @@ namespace ClinicManagement.UI.ViewModels
 
         public ObservableCollection<MedicineRowViewModel> ToaThuocDangKe { get; } = new ObservableCollection<MedicineRowViewModel>();
 
-        // --- COMMANDS ---
         public ICommand ThemThuocCommand { get; }
         public ICommand HoanTatKhamCommand { get; }
         public ICommand HuyKhamCommand { get; }
@@ -76,16 +76,40 @@ namespace ClinicManagement.UI.ViewModels
                 await Task.CompletedTask;
             });
 
-            // Mặc định ban đầu luôn mở khóa để các luồng nạp data không bị chặn gán thuộc tính
             IsReadOnly = false;
             AddButtonVisibility = Visibility.Visible;
 
             _ = InitializeDataAsync();
         }
 
-        /// <summary>
-        /// Luồng tổng hợp bốc thông tin danh mục và hồ sơ khám cũ
-        /// </summary>
+        public PrescriptionViewModel(MainWindowViewModel mainViewModel, object previousView, string hoTenBenhNhan, LichSuKhamDto historyDetail)
+        {
+            _mainViewModel = mainViewModel;
+            _previousView = previousView;
+            _phieuKhamService = new PhieuKhamService();
+            _danhMucService = new DanhMucService();
+
+            _benhNhanHienTai = new BenhNhan { HoTen = hoTenBenhNhan };
+            NgayKhamText = historyDetail.NgayKham.ToString("dd/MM/yyyy");
+            TrieuChung = string.IsNullOrEmpty(historyDetail.TrieuChung) ? "Không có ghi nhận" : historyDetail.TrieuChung;
+            BenhDuocChanDoan = historyDetail.TenLoaiBenh;
+
+            DanhSachLoaiBenh.Add(new LoaiBenhDto { MaLoaiBenh = historyDetail.TenLoaiBenh, TenLoaiBenh = historyDetail.TenLoaiBenh });
+
+            IsReadOnly = true;
+            AddButtonVisibility = Visibility.Collapsed;
+
+            HuyKhamCommand = new RelayCommand(o =>
+            {
+                if (_previousView != null)
+                {
+                    _mainViewModel.CurrentView = _previousView;
+                }
+            });
+
+            _ = InitializeHistoryDataAsync(historyDetail);
+        }
+
         private async Task InitializeDataAsync()
         {
             try
@@ -104,7 +128,6 @@ namespace ClinicManagement.UI.ViewModels
                     OnPropertyChanged(nameof(DanhSachLoaiBenh));
                 });
 
-                // 🌟 XỬ LÝ CA ĐÃ KHÁM: Bốc dữ liệu cũ
                 if (!string.IsNullOrEmpty(_maPhieuKhamHienTai))
                 {
                     var phieuCu = await _phieuKhamService.GetPhieuKhamByIdAsync(_maPhieuKhamHienTai);
@@ -113,7 +136,6 @@ namespace ClinicManagement.UI.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            // 1. Đổ dữ liệu chữ thuần túy trước
                             TrieuChung = phieuCu.TrieuChung;
                             BenhDuocChanDoan = phieuCu.MaLoaiBenh;
 
@@ -123,7 +145,6 @@ namespace ClinicManagement.UI.ViewModels
                             {
                                 foreach (var itemThuoc in phieuCu.ToaThuoc)
                                 {
-                                    // 🌟 BÍ QUYẾT: Khởi tạo dòng thuốc ở trạng thái MỞ KHÓA (false) để gán dữ liệu trơn tru
                                     var row = new MedicineRowViewModel(CachedThuocList, CachedCachDungList, false);
 
                                     row.XoaThuocCommand = new RelayCommand(o => {
@@ -131,19 +152,15 @@ namespace ClinicManagement.UI.ViewModels
                                         ToaThuocDangKe.Remove(row);
                                     });
 
-                                    // So khớp đối tượng từ mảng Cache để ComboBox tìm đúng vị trí dòng dữ liệu
                                     row.SelectedThuoc = CachedThuocList.FirstOrDefault(t => t.MaThuoc == itemThuoc.MaThuoc);
                                     row.SoLuong = itemThuoc.SoLuong;
                                     row.SelectedCachDung = CachedCachDungList.FirstOrDefault(c => c.MaCachDung == itemThuoc.MaCachDung);
 
-                                    // 🌟 KHÓA RIÊNG: Sau khi gán data xong xuôi mới kích hoạt khóa cứng dòng thuốc này lại
                                     row.IsRowEnabled = false;
-
                                     ToaThuocDangKe.Add(row);
                                 }
                             }
 
-                            // 2. CHỐT CHẶN CUỐI: Sau khi dữ liệu đã map đầy đủ lên UI mới chính thức khóa cứng toàn Form mẹ
                             IsReadOnly = true;
                             AddButtonVisibility = Visibility.Collapsed;
                         });
@@ -151,7 +168,6 @@ namespace ClinicManagement.UI.ViewModels
                     }
                 }
 
-                // Nếu là ca mới tinh chưa khám, tự động tạo sẵn một dòng thuốc trống
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     if (ToaThuocDangKe.Count == 0)
@@ -163,6 +179,36 @@ namespace ClinicManagement.UI.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[PrescriptionViewModel] Lỗi InitializeDataAsync: {ex.Message}");
+            }
+        }
+
+        private async Task InitializeHistoryDataAsync(LichSuKhamDto historyDetail)
+        {
+            try
+            {
+                CachedThuocList = await _danhMucService.GetThuocAsync() ?? new List<ThuocDto>();
+                CachedCachDungList = await _danhMucService.GetCachDungAsync() ?? new List<CachDungDto>();
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ToaThuocDangKe.Clear();
+                    if (historyDetail.ToaThuoc != null)
+                    {
+                        foreach (var itemThuoc in historyDetail.ToaThuoc)
+                        {
+                            var row = new MedicineRowViewModel(CachedThuocList, CachedCachDungList, false);
+                            row.SelectedThuoc = CachedThuocList.FirstOrDefault(t => t.MaThuoc == itemThuoc.MaThuoc);
+                            row.SoLuong = itemThuoc.SoLuong;
+                            row.SelectedCachDung = CachedCachDungList.FirstOrDefault(c => c.MaCachDung == itemThuoc.MaCachDung);
+                            row.IsRowEnabled = false;
+                            ToaThuocDangKe.Add(row);
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[PrescriptionViewModel] Lỗi InitializeHistoryDataAsync: {ex.Message}");
             }
         }
 
@@ -236,7 +282,7 @@ namespace ClinicManagement.UI.ViewModels
         private ThuocDto _selectedThuoc;
         private CachDungDto _selectedCachDung;
         private int _soLuong = 1;
-        private bool _isRowEnabled = true; // Chuyển sang biến thường để dễ gán ép trạng thái công khai
+        private bool _isRowEnabled = true;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public ICommand XoaThuocCommand { get; set; }
@@ -256,7 +302,6 @@ namespace ClinicManagement.UI.ViewModels
         public string DonViTinh => SelectedThuoc?.TenDonVi ?? "";
         public int SoLuong { get => _soLuong; set { _soLuong = value; OnPropertyChanged(); } }
 
-        // 🌟 PROPERTY ĐỒNG BỘ: Cho phép thay đổi linh hoạt trạng thái đóng mở từ bên ngoài lớp
         public bool IsRowEnabled
         {
             get => _isRowEnabled;
@@ -268,7 +313,7 @@ namespace ClinicManagement.UI.ViewModels
 
         public MedicineRowViewModel(List<ThuocDto> thuocSource, List<CachDungDto> cachDungSource, bool isLocked = false)
         {
-            _isRowEnabled = !isLocked; // Nếu bị Lock từ đầu thì IsEnabled = false, ngược lại = true
+            _isRowEnabled = !isLocked;
             DanhSachThuocDto = new ObservableCollection<ThuocDto>(thuocSource);
             DanhSachCachDungDto = new ObservableCollection<CachDungDto>(cachDungSource);
 
