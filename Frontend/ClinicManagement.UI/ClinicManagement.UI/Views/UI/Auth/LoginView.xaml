@@ -79,7 +79,7 @@
                                      Margin="8,2"
                                      Background="Transparent"
                                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                                     LostFocus="EmailTextBox_LostFocus"/>
+                                    />
 
                         </Border>
 

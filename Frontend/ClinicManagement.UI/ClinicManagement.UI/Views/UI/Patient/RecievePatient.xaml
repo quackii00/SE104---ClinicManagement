@@ -33,7 +33,7 @@
                             <RadioButton Content="Nữ" IsChecked="{Binding IsNu}" Margin="25,0"/>
                         </StackPanel>
 
-                        <TextBlock Text="Ngày sinh" Margin="0,20,0,5"/>
+                        <TextBlock Text="Năm sinh" Margin="0,20,0,5"/>
                         <TextBox Text="{Binding NgaySinhText, UpdateSourceTrigger=PropertyChanged}" 
                                  ToolTip="Định dạng: dd/MM/yyyy hoặc yyyy" 
                                  VerticalContentAlignment="Center" 
