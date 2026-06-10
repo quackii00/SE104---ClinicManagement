@@ -13,19 +13,27 @@ namespace ClinicManagement.UI.ViewModels
     public class RecievePatientViewModel : INotifyPropertyChanged
     {
         private readonly DanhSachKhamService _danhSachKhamService;
+        private readonly TraCuuService _traCuuService;
         private readonly MainWindowViewModel _mainViewModel;
 
+        private Visibility _isAddButtonVisible = Visibility.Collapsed;
         private string _hoTen;
         private bool _isNam = true;
-        private bool _isNu;
         private string _ngaySinhText;
         private string _diaChi;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        // --- CÁC THUỘC TÍNH BINDING RA GIAO DIỆN XAML ---
+        public Visibility IsAddButtonVisible
+        {
+            get => _isAddButtonVisible;
+            set { _isAddButtonVisible = value; OnPropertyChanged(); }
+        }
+
         public string HoTen { get => _hoTen; set { _hoTen = value; OnPropertyChanged(); } }
         public bool IsNam { get => _isNam; set { _isNam = value; OnPropertyChanged(); } }
-        public bool IsNu { get => _isNu; set { _isNu = value; OnPropertyChanged(); } }
+        public bool IsNu { get => !_isNam; set { _isNam = !value; OnPropertyChanged(); OnPropertyChanged(nameof(IsNam)); } }
         public string NgaySinhText { get => _ngaySinhText; set { _ngaySinhText = value; OnPropertyChanged(); } }
         public string DiaChi { get => _diaChi; set { _diaChi = value; OnPropertyChanged(); } }
 
@@ -33,117 +41,162 @@ namespace ClinicManagement.UI.ViewModels
         public ICommand ThemCommand { get; }
         public ICommand HuyCommand { get; }
 
-        public RecievePatientViewModel(MainWindowViewModel mainViewModel)
+        // --- HÀM KHỞI TẠO (CONSTRUCTOR) ---
+        public RecievePatientViewModel(MainWindowViewModel mainViewModel, DanhSachKhamService danhSachKhamService)
         {
-            _danhSachKhamService = new DanhSachKhamService();
             _mainViewModel = mainViewModel;
+            _danhSachKhamService = danhSachKhamService;
+            _traCuuService = new TraCuuService();
 
             TimBenhNhanCommand = new RelayCommand(async o => await ExecuteTimBenhNhanAsync());
             ThemCommand = new RelayCommand(async o => await ExecuteThemAsync());
-            HuyCommand = new RelayCommand(o => ExecuteHuy());
+            HuyCommand = new RelayCommand(async o => await ExecuteHuyAsync());
+
+            // Kiểm tra phân quyền ẩn/hiện nút thêm của tài khoản đang đăng nhập
+            CheckUserRolePermissions();
+        }
+
+        private void CheckUserRolePermissions()
+        {
+            string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
+            if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("admin"))
+            {
+                IsAddButtonVisible = Visibility.Visible;
+            }
+            else
+            {
+                IsAddButtonVisible = Visibility.Collapsed;
+            }
         }
 
         /// <summary>
-        /// NÚT TÌM KIẾM: ĐÃ ĐỔI LUẬT - Tra cứu hồ sơ cũ trực tiếp bằng Họ Tên Tiếp tân vừa gõ
+        /// Logic nút bấm Tra Cứu bệnh nhân cũ bằng TraCuuService chuyên trách
         /// </summary>
         private async Task ExecuteTimBenhNhanAsync()
         {
             if (string.IsNullOrWhiteSpace(HoTen))
             {
-                MessageBox.Show("Vui lòng nhập Họ tên vào ô trống trước khi bấm Tìm kiếm!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập Họ tên để tra cứu!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Gọi hàm tìm kiếm ngầm của Service (truyền chuỗi rỗng cho Sdt, truyền HoTen vào)
-            var existingPatient = await _danhSachKhamService.TimBenhNhanTheoSdtAsync(string.Empty, HoTen);
-            if (existingPatient != null)
-            {
-                // Nếu tìm thấy bệnh nhân cũ trùng tên trong DB, tự động điền các thông tin còn lại
-                IsNam = existingPatient.GioiTinh == "Nam";
-                IsNu = existingPatient.GioiTinh == "Nữ";
-                NgaySinhText = existingPatient.NamSinh.ToString();
-                DiaChi = existingPatient.DiaChi;
+            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen, null, null, null);
 
-                MessageBox.Show($"Hệ thống tìm thấy hồ sơ cũ của bệnh nhân: {existingPatient.HoTen} (Mã: {existingPatient.MaBenhNhan})", "Tìm kiếm thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (list != null && list.Count > 0)
+            {
+                var patient = list[0];
+                IsNam = patient.GioiTinh == "Nam";
+                NgaySinhText = patient.NamSinh.ToString();
+                DiaChi = patient.DiaChi;
+                MessageBox.Show("Đã tìm thấy thông tin hồ sơ bệnh nhân cũ.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show($"Không tìm thấy hồ sơ cũ nào tên '{HoTen}'. Hệ thống sẽ tự tạo mới khi bấm nút Thêm.", "Thông báo tra cứu", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Không tìm thấy hồ sơ cũ với tên này.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         /// <summary>
-        /// NÚT THÊM: LUỒNG ĐI CHUẨN XÁC THEO BIỂU ĐỒ - DÙNG HỌ TÊN ĐỂ THỰC HIỆN RẼ NHÁNH ALT
+        /// Logic nút bấm Thêm/Tiếp nhận bệnh nhân vào danh sách khám ngày hôm nay
         /// </summary>
         private async Task ExecuteThemAsync()
         {
-            // 1. Chuẩn hóa thông tin đầu vào
-            string gioiTinhXuly = IsNu ? "Nữ" : "Nam";
-            int namSinhXuly = DateTime.Now.Year - 15;
-            if (DateTime.TryParse(NgaySinhText, out DateTime parsedDate)) namSinhXuly = parsedDate.Year;
-            else int.TryParse(NgaySinhText, out namSinhXuly);
-
-            var testPatient = new BenhNhan { HoTen = HoTen, GioiTinh = gioiTinhXuly, NamSinh = namSinhXuly, DiaChi = DiaChi };
-
-            // Thông điệp kiemTraThongTinHopLe()
-            if (!testPatient.KiemTraThongTinHopLe())
+            // 1. Validate cơ bản dữ liệu đầu vào
+            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(NgaySinhText))
             {
-                MessageBox.Show("Thông tin không hợp lệ! Vui lòng điền đầy đủ Họ tên và Năm sinh.", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Vui lòng điền đủ Họ tên và Năm sinh!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            // Kiểm tra quy định giới hạn 40 người trong ngày
+            if (!int.TryParse(NgaySinhText, out int namSinh))
+            {
+                MessageBox.Show("Năm sinh phải là số nguyên hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 2. Kiểm tra giới hạn phòng mạch (Quy định tối đa số lượng ca khám)
             var dsKham = AppState.Instance.DanhSachKhamHienTai;
-            if (dsKham != null && !dsKham.KiemTraGioiHan(AppState.Instance.SoLuongToiDaHeThong))
+            int maxPatients = AppState.Instance.SoLuongToiDaHeThong > 0 ? AppState.Instance.SoLuongToiDaHeThong : 40;
+            if (dsKham != null && dsKham.ChiTietDanhSach != null && dsKham.ChiTietDanhSach.Count >= maxPatients)
             {
-                MessageBox.Show($"Không thể tiếp nhận! Hôm nay phòng mạch đã đạt giới hạn tối tối đa {AppState.Instance.SoLuongToiDaHeThong} bệnh nhân.", "Thông báo quy định", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Phòng mạch đã đủ số lượng quy định trong ngày ({maxPatients} người)!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            ChiTietKhamItemDto finalPatientRecord = null;
+            // 3. Rẽ nhánh xử lý: Dùng chung TraCuuService quét kiểm tra trùng lặp hồ sơ trước khi thêm
+            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen, null, null, null);
+            ChiTietKhamItemDto record = null;
 
-            // 2. Chạy thông điệp timBenhNhan() bằng Họ Tên hướng vào Service
-            var checkPatientExist = await _danhSachKhamService.TimBenhNhanTheoSdtAsync(string.Empty, HoTen);
-
-            // 3. Rẽ nhánh alt: Kiểm tra xem bệnh nhân đã tồn tại hay chưa
-            if (checkPatientExist != null)
+            if (list != null && list.Count > 0)
             {
-                // Nhánh [Bệnh nhân đã tồn tại]: Lấy luôn hồ sơ cũ
-                finalPatientRecord = checkPatientExist;
+                var target = list[0];
+                // Người cũ: Ép kiểu trực tiếp từ lịch sử tra cứu sang DTO kết quả tiếp nhận
+                record = new ChiTietKhamItemDto
+                {
+                    MaBenhNhan = target.MaBenhNhan,
+                    HoTen = target.HoTen,
+                    GioiTinh = target.GioiTinh,
+                    NamSinh = target.NamSinh,
+                    DiaChi = target.DiaChi
+                };
             }
             else
             {
-                // Nhánh [Bệnh nhân chưa tồn tại]: Chạy thông điệp taoBenhNhan() xuống DB
-                var request = new DangKyKhamRequest { HoTen = HoTen, GioiTinh = gioiTinhXuly, NamSinh = namSinhXuly, DiaChi = DiaChi, NgayKham = DateTime.Today };
-                finalPatientRecord = await _danhSachKhamService.TiepNhanBenhNhanAsync(request);
+                // Người mới: Gửi gói tin POST lên API
+                // 🌟 SỬA ĐỔI QUYẾT ĐỊNH: Chỉ định cụ thể dạng ngày UTC để gỡ bỏ Giờ địa phương thừa gây lỗi 400 Bad Request trên Server
+                DateTime ngayKhamChuan = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
+
+                var request = new DangKyKhamRequest
+                {
+                    HoTen = HoTen,
+                    GioiTinh = IsNam ? "Nam" : "Nữ",
+                    NamSinh = namSinh,
+                    DiaChi = DiaChi,
+                    NgayKham = ngayKhamChuan
+                };
+
+                record = await _danhSachKhamService.TiepNhanBenhNhanAsync(request);
             }
 
-            // 4. Chạy thông điệp themBenhNhan() đổ vào danh sách khám hiện tại
-            if (finalPatientRecord != null && dsKham != null)
+            // 🌟 CHỐT CHẶN AN TOÀN: Nếu dính lỗi phân quyền (403) hoặc lỗi JSON (400) làm record bị null, đứng im giữ UI để đổi tài khoản
+            if (record == null) return;
+
+            // 4. Cập nhật dữ liệu thật nhận về từ Server vào bộ nhớ đệm AppState để ListView hiển thị đồng bộ
+            if (dsKham != null)
             {
+                if (dsKham.ChiTietDanhSach == null)
+                {
+                    dsKham.ChiTietDanhSach = new System.Collections.Generic.List<ChiTietDanhSachKham>();
+                }
+
                 dsKham.ChiTietDanhSach.Add(new ChiTietDanhSachKham
                 {
-                    STT = finalPatientRecord.STT,
-                    TrangThai = finalPatientRecord.TrangThai ?? "Chờ khám",
+                    STT = record.STT > 0 ? record.STT : (dsKham.ChiTietDanhSach.Count + 1),
+                    TrangThai = string.IsNullOrEmpty(record.TrangThai) ? "Chờ khám" : record.TrangThai,
                     BenhNhan = new BenhNhan
                     {
-                        MaBenhNhan = finalPatientRecord.MaBenhNhan,
-                        HoTen = finalPatientRecord.HoTen,
-                        GioiTinh = finalPatientRecord.GioiTinh,
-                        NamSinh = finalPatientRecord.NamSinh,
-                        DiaChi = finalPatientRecord.DiaChi
+                        MaBenhNhan = record.MaBenhNhan,
+                        HoTen = record.HoTen,
+                        GioiTinh = record.GioiTinh,
+                        NamSinh = record.NamSinh,
+                        DiaChi = record.DiaChi
                     }
                 });
 
-                MessageBox.Show($"Tiếp nhận thành công bệnh nhân: {finalPatientRecord.HoTen}!\nSố thứ tự khám hiện tại: {finalPatientRecord.STT}", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Kích hoạt đồng bộ số liệu biểu đồ cho Dashboard màn hình chính
+                AppState.Instance.TriggerDashboardUpdate();
 
-                _mainViewModel.CurrentView = new ClinicManagement.UI.ViewModels.PatientListViewModel(_mainViewModel);
+                MessageBox.Show($"Tiếp nhận thành công bệnh nhân: {record.HoTen}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Điều hướng quay trở về màn hình danh sách khám bệnh hôm nay
+                _mainViewModel.CurrentView = new PatientListViewModel(_mainViewModel);
             }
         }
 
-        private void ExecuteHuy()
+        private async Task ExecuteHuyAsync()
         {
-            _mainViewModel.CurrentView = new ClinicManagement.UI.ViewModels.PatientListViewModel(_mainViewModel);
+            _mainViewModel.CurrentView = new PatientListViewModel(_mainViewModel);
+            await Task.CompletedTask;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null) =>

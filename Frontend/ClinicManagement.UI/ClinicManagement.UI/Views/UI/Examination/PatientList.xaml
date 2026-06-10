@@ -117,7 +117,8 @@
                         HorizontalAlignment="Right"
                         Margin="0,20,0,0"
                         Style="{StaticResource PrimaryButton}"
-                        Command="{Binding GoToFormCommand}"/>
+                        Command="{Binding GoToFormCommand}"
+                        Visibility="{Binding IsAddButtonVisible}"/>
             </Grid>
         </Border>
     </Grid>
