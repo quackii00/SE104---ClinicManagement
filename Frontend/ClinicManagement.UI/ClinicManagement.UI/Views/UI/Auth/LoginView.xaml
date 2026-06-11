@@ -57,7 +57,10 @@
                                 BorderBrush="{StaticResource BorderBrush}"
                                 BorderThickness="1">
                             <TextBox BorderThickness="0"
-                                     Margin="8,2"
+                                     Margin="8,0"
+                                     Padding="0"
+                                     VerticalAlignment="Stretch"
+                                     VerticalContentAlignment="Center"
                                      Background="Transparent"
                                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
                         </Border>
@@ -97,7 +100,10 @@
                                 BorderBrush="{StaticResource BorderBrush}"
                                 BorderThickness="1">
                             <PasswordBox BorderThickness="0"
-                                         Margin="8,2"
+                                         Margin="8,0"
+                                         Padding="0"
+                                         VerticalAlignment="Stretch"
+                                         VerticalContentAlignment="Center"
                                          Background="Transparent"
                                          x:Name="PasswordBox"
                                          PasswordChanged="PasswordBox_PasswordChanged"/>
@@ -110,10 +116,12 @@
                                   Cursor="Hand"
                                   IsChecked="{Binding IsRememberMe, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                        <Button Content="Signin"
-                                Width="95"
-                                Height="38"
+                        <Button Content="Sign In"
+                                Width="130"
+                                Height="40"
                                 HorizontalAlignment="Center"
+                                FontSize="15"
+                                FontWeight="SemiBold"
                                 Style="{StaticResource PrimaryButton}"
                                 Command="{Binding SignInCommand}"
                                 IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
