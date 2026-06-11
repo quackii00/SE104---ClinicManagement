@@ -19,15 +19,47 @@ namespace ClinicManagement.UI.ViewModels
         private string _selectedRole = "Bác Sĩ";
         private bool _isLoading;
         private string _errorMessage;
+        private bool _isRememberMe;
+
+        private readonly TokenStorageService _tokenStorageService = new TokenStorageService();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // --- BINDING PROPERTIES ---
-        public string Email { get => _email; set { _email = value; OnPropertyChanged(); } }
-        public string Password { get => _password; set { _password = value; OnPropertyChanged(); } }
-        public string SelectedRole { get => _selectedRole; set { _selectedRole = value; OnPropertyChanged(); } }
-        public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
-        public string ErrorMessage { get => _errorMessage; set { _errorMessage = value; OnPropertyChanged(); } }
+        public string Email
+        {
+            get => _email;
+            set { _email = value; OnPropertyChanged(); }
+        }
+
+        public string Password
+        {
+            get => _password;
+            set { _password = value; OnPropertyChanged(); }
+        }
+
+        public string SelectedRole
+        {
+            get => _selectedRole;
+            set { _selectedRole = value; OnPropertyChanged(); }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set { _isLoading = value; OnPropertyChanged(); }
+        }
+
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); }
+        }
+
+        public bool IsRememberMe
+        {
+            get => _isRememberMe;
+            set { _isRememberMe = value; OnPropertyChanged(); }
+        }
 
         public ObservableCollection<string> Roles { get; } = new ObservableCollection<string> { "Tiếp Tân", "Kế Toán", "Admin", "Bác Sĩ" };
 
@@ -40,7 +72,6 @@ namespace ClinicManagement.UI.ViewModels
             _email = AppState.Instance.LastUsedEmail;
         }
 
-        // 🌟 ĐÃ SỬA THÀNH HÀM THƯỜNG: Khớp 100% với lệnh gọi vm.OnEmailLostFocus() ở Code-Behind
         public void OnEmailLostFocus()
         {
             if (!string.IsNullOrWhiteSpace(Email) && !IsValidEmail(Email))
@@ -55,7 +86,11 @@ namespace ClinicManagement.UI.ViewModels
 
         private async Task SignInAsync()
         {
-            if (!IsValidEmail(Email)) { ErrorMessage = "Email không hợp lệ."; return; }
+            if (!IsValidEmail(Email))
+            {
+                ErrorMessage = "Email không hợp lệ.";
+                return;
+            }
 
             IsLoading = true;
             ErrorMessage = string.Empty;
@@ -72,7 +107,23 @@ namespace ClinicManagement.UI.ViewModels
                         return;
                     }
 
+                    if (IsRememberMe)
+                    {
+                        _tokenStorageService.SaveToken(AppState.Instance.AuthToken);
+                        _tokenStorageService.SaveName(AppState.Instance.CurrentUserName);
+                        _tokenStorageService.SaveRole(AppState.Instance.CurrentUserRole);
+                        _tokenStorageService.SaveRoleCode(AppState.Instance.CurrentUserRoleCode);
+                    }
+                    else
+                    {
+                        _tokenStorageService.ClearToken();
+                        _tokenStorageService.SaveName(string.Empty);
+                        _tokenStorageService.SaveRole(string.Empty);
+                        _tokenStorageService.SaveRoleCode(string.Empty);
+                    }
+
                     AppState.Instance.LastUsedEmail = Email;
+
                     var mainWindow = new MainWindow();
                     mainWindow.Show();
 
@@ -85,13 +136,25 @@ namespace ClinicManagement.UI.ViewModels
                         }
                     }
                 }
-                else { ErrorMessage = "Email hoặc mật khẩu không chính xác."; }
+                else
+                {
+                    ErrorMessage = "Email hoặc mật khẩu không chính xác.";
+                }
             }
-            catch (Exception ex) { ErrorMessage = $"Lỗi kết nối Server: {ex.Message}"; }
-            finally { IsLoading = false; }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Lỗi kết nối Server: {ex.Message}";
+            }
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
-        private bool IsValidEmail(string email) => !string.IsNullOrWhiteSpace(email) && Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
-        protected void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        private bool IsValidEmail(string email) =>
+            !string.IsNullOrWhiteSpace(email) && Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

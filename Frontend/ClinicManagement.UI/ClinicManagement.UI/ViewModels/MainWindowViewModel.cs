@@ -114,6 +114,9 @@ namespace ClinicManagement.UI.ViewModels
                     // Nếu bấm từ Sidebar mà chưa chọn bệnh nhân, điều hướng về PatientList để chọn
                     CurrentView = new PatientListViewModel(this);
                     break;
+                case "Report":
+                    CurrentView = new ReportViewModel();
+                    break;
                 default:
                     CurrentView = new DashboardViewModel();
                     break;
