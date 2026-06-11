@@ -66,7 +66,6 @@
                 </Grid.ColumnDefinitions>
 
                 <components:Sidebar Grid.Column="0" 
-                                    Width="180"
                                     VerticalAlignment="Stretch"
                                     DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
