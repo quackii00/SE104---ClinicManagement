@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:services="clr-namespace:ClinicManagement.UI.Services"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="180">
+             d:DesignHeight="600">
 
     <Border Background="{StaticResource SidebarBrush}" 
-            Width="180"
             VerticalAlignment="Stretch"
             CornerRadius="14,14,14,14" 
             BorderBrush="{StaticResource BorderBrush}" 
@@ -25,20 +24,26 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="45"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition Width="35"/>
                 </Grid.ColumnDefinitions>
 
-                <Ellipse Width="35" Height="35" Stroke="{StaticResource BorderBrush}" StrokeThickness="1" Fill="{StaticResource CardBrush}" VerticalAlignment="Top"/>
+                <Ellipse Grid.Column="0" Width="35" Height="35" Stroke="{StaticResource BorderBrush}" StrokeThickness="1" Fill="{StaticResource CardBrush}" VerticalAlignment="Top"/>
 
-                <StackPanel Grid.Column="1" Margin="5,4,0,0" VerticalAlignment="Top">
-                    <TextBlock Text="{Binding UserName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis"/>
-                    <TextBlock Text="{Binding UserRole}" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis"/>
-                </StackPanel>
+                <Grid Grid.Column="1" Margin="8,3,5,0" VerticalAlignment="Top">
 
-                <Button Grid.Column="2" Width="26" Height="26" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" FontSize="16" Cursor="Hand" Content="🏠"
-                        Command="{Binding NavigationCommand}" 
-                        CommandParameter="Dashboard" />
-            </Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{Binding UserName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                    <TextBlock Grid.Row="1" Text="{Binding UserRole}" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                </Grid>
+
+            <Button Grid.Column="2" Width="26" Height="26" HorizontalAlignment="Center" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" FontSize="16" Cursor="Hand" Content="🏠"
+                Command="{Binding NavigationCommand}" 
+                CommandParameter="Dashboard" />
+        </Grid>
 
             <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,25,0,0">
 

@@ -9,7 +9,7 @@
              d:DesignHeight="700"
              d:DesignWidth="800">
 
-    <Grid Margin="10">
+    <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="15"
