@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:ClinicManagement.UI.ViewModels" 
         xmlns:exam="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
         xmlns:patient="clr-namespace:ClinicManagement.UI.Views.UI.Patient"
+        xmlns:report="clr-namespace:ClinicManagement.UI.Views.UI.Report"
         Title="Clinic Management"
         Height="700"
         Width="1000"
@@ -42,6 +43,10 @@
 
         <DataTemplate DataType="{x:Type vm:InvoiceViewModel}">
             <exam:InvoiceView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ReportViewModel}">
+            <report:ReportView />
         </DataTemplate>
     </Window.Resources>
 
