@@ -1,5 +1,4 @@
-﻿
-using ClinicManagement.UI.DTOs;
+﻿using ClinicManagement.UI.DTOs;
 using ClinicManagement.UI.Models;
 using ClinicManagement.UI.Services;
 using System;
@@ -18,6 +17,9 @@ namespace ClinicManagement.UI.ViewModels
         private readonly TraCuuService _traCuuService;
         private readonly MainWindowViewModel _mainWindowViewModel;
 
+        // Đảm bảo namespace ClinicManagement.UI.DTOs đã được using ở trên
+        private readonly TraCuuBenhNhanResultDto _selectedPatient;
+
         private string _maBenhNhan;
         private string _hoTen;
         private string _gioiTinh;
@@ -27,7 +29,6 @@ namespace ClinicManagement.UI.ViewModels
         private ObservableCollection<LichSuKhamDto> _histories = new ObservableCollection<LichSuKhamDto>();
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public ICommand ViewPhieuCommand { get; }
 
         public string HoTen { get => _hoTen; set { _hoTen = value; OnPropertyChanged(); } }
         public string GioiTinh { get => _gioiTinh; set { _gioiTinh = value; OnPropertyChanged(); } }
@@ -37,6 +38,7 @@ namespace ClinicManagement.UI.ViewModels
 
         public ObservableCollection<LichSuKhamDto> Histories { get => _histories; set { _histories = value; OnPropertyChanged(); } }
 
+        public ICommand ViewPhieuCommand { get; }
         public ICommand BackCommand { get; }
         public ICommand ViewDetailCommand { get; }
 
@@ -44,6 +46,7 @@ namespace ClinicManagement.UI.ViewModels
         {
             _mainWindowViewModel = mainWindowViewModel;
             _traCuuService = new TraCuuService();
+            _selectedPatient = selectedPatient;
 
             _maBenhNhan = selectedPatient.MaBenhNhan;
             HoTen = selectedPatient.HoTen;
@@ -51,6 +54,7 @@ namespace ClinicManagement.UI.ViewModels
             NamSinh = selectedPatient.NamSinh;
 
             DiaChi = "Đang tải dữ liệu địa chỉ...";
+
             ViewPhieuCommand = new RelayCommand(p => ExecuteViewPhieu(p as LichSuKhamDto));
             BackCommand = new RelayCommand(p => ExecuteBack());
             ViewDetailCommand = new RelayCommand(p => ExecuteViewDetail(p as LichSuKhamDto));
@@ -63,7 +67,6 @@ namespace ClinicManagement.UI.ViewModels
             try
             {
                 IsLoading = true;
-
                 if (string.IsNullOrEmpty(_maBenhNhan)) return;
 
                 var historyList = await _traCuuService.GetLichSuKhamAsync(_maBenhNhan);
@@ -73,11 +76,7 @@ namespace ClinicManagement.UI.ViewModels
                     Histories.Clear();
                     if (historyList != null && historyList.Count > 0)
                     {
-                        foreach (var history in historyList)
-                        {
-                            Histories.Add(history);
-                        }
-
+                        foreach (var history in historyList) Histories.Add(history);
                         DiaChi = selectedPatient_GetDiaChiSafe(historyList);
                     }
                     else
@@ -89,7 +88,7 @@ namespace ClinicManagement.UI.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[MedicalHistoryViewModel] Lỗi tải lịch sử: {ex.Message}");
-                MessageBox.Show("Không thể tải danh sách lịch sử bệnh án từ máy chủ.", "Lỗi kết nối", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Không thể tải danh sách lịch sử bệnh án.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -100,41 +99,30 @@ namespace ClinicManagement.UI.ViewModels
         private void ExecuteViewPhieu(LichSuKhamDto selectedHistory)
         {
             if (selectedHistory == null) return;
-
-            System.Diagnostics.Debug.WriteLine($"[MedicalHistory] Đang mở giao diện PrescriptionView cho phiếu: {selectedHistory.MaPhieuKham}");
-
-            _mainWindowViewModel.CurrentView = new PrescriptionViewModel(
-                _mainWindowViewModel,
-                this,
-                HoTen,
-                selectedHistory
-            );
+            var patient = new BenhNhan
+            {
+                HoTen = this.HoTen,
+                GioiTinh = this.GioiTinh,
+                NamSinh = this.NamSinh
+            };
+            _mainWindowViewModel.CurrentView = new MedicalRecordViewModel(_mainWindowViewModel, selectedHistory, patient, _selectedPatient);
         }
 
-        private void ExecuteBack()
-        {
-            _mainWindowViewModel.Navigate("PatientLookup");
-        }
+        private void ExecuteBack() => _mainWindowViewModel.Navigate("PatientLookup");
 
         private void ExecuteViewDetail(LichSuKhamDto selectedHistory)
         {
             if (selectedHistory == null) return;
 
-            if (selectedHistory.ToaThuoc == null || selectedHistory.ToaThuoc.Count == 0)
+            var patient = new BenhNhan
             {
-                MessageBox.Show("Ca khám này bác sĩ không tiến hành kê toa thuốc uống.", "Thông báo đơn thuốc", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
+                HoTen = this.HoTen,
+                GioiTinh = this.GioiTinh,
+                // Chuyển int sang string bằng .ToString()
+                NamSinh = this.NamSinh
+            };
 
-            string chiTietToa = "--- TOA THUỐC ĐI KÈM ---\n\n";
-            int count = 1;
-            foreach (var thuoc in selectedHistory.ToaThuoc)
-            {
-                chiTietToa += $"{count++}. Mã thuốc: {thuoc.MaThuoc} - Số lượng: {thuoc.SoLuong} viên\n" +
-                      $"   Cách dùng: {thuoc.MaCachDung}\n\n";
-            }
-
-            MessageBox.Show(chiTietToa, "Chi tiết đơn thuốc", MessageBoxButton.OK, MessageBoxImage.Information);
+            _mainWindowViewModel.CurrentView = new MedicalRecordViewModel(_mainWindowViewModel, selectedHistory, patient, _selectedPatient);
         }
 
         private string selectedPatient_GetDiaChiSafe(List<LichSuKhamDto> list)

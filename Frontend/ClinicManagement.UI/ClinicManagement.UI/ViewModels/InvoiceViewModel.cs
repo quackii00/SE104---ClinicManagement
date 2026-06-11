@@ -20,6 +20,7 @@ namespace ClinicManagement.UI.ViewModels
         private decimal _totalMedicineCost;
         private decimal _totalAmount;
         private bool _isProcessing;
+        private bool _isPaid;
         private DateTime _invoiceDate = DateTime.Today;
         private ObservableCollection<ChiTietToaThuocDto> _invoiceMedicines = new ObservableCollection<ChiTietToaThuocDto>();
 
@@ -49,6 +50,12 @@ namespace ClinicManagement.UI.ViewModels
         {
             get => _isProcessing;
             set { _isProcessing = value; OnPropertyChanged(); }
+        }
+
+        public bool IsPaid
+        {
+            get => _isPaid;
+            set { _isPaid = value; OnPropertyChanged(); }
         }
 
         public DateTime InvoiceDate
@@ -92,6 +99,9 @@ namespace ClinicManagement.UI.ViewModels
                 {
                     if (invoiceData != null)
                     {
+                        // 🌟 Tận dụng thuộc tính DaThanhToan từ DTO để khóa nút chuẩn xác
+                        IsPaid = invoiceData.DaThanhToan;
+
                         ExaminationFee = invoiceData.TienKham;
                         TotalMedicineCost = invoiceData.TienThuoc;
                         TotalAmount = invoiceData.TongTien;
@@ -108,6 +118,7 @@ namespace ClinicManagement.UI.ViewModels
                     }
                     else
                     {
+                        IsPaid = false;
                         ExaminationFee = 30000;
                         TotalMedicineCost = 0;
                         TotalAmount = 30000;
@@ -120,6 +131,7 @@ namespace ClinicManagement.UI.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[InvoiceViewModel] Lỗi nạp hóa đơn: {ex.Message}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+                    IsPaid = false;
                     ExaminationFee = 30000;
                     TotalAmount = 30000;
                     InvoiceDate = DateTime.Today;
@@ -129,7 +141,7 @@ namespace ClinicManagement.UI.ViewModels
 
         private async Task ExecutePaymentAsync()
         {
-            if (IsProcessing) return;
+            if (IsProcessing || IsPaid) return;
 
             try
             {
@@ -146,6 +158,9 @@ namespace ClinicManagement.UI.ViewModels
                 if (result != null)
                 {
                     MessageBox.Show("Thanh toán và lưu hóa đơn thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Khóa nút ngay khi thanh toán thành công
+                    IsPaid = true;
 
                     if (AppState.Instance.DanhSachKhamHienTai?.ChiTietDanhSach != null)
                     {

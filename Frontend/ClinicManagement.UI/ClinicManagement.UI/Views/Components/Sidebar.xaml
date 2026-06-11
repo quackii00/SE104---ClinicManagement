@@ -3,62 +3,127 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:services="clr-namespace:ClinicManagement.UI.Services"
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="220">
-    <Grid>
-        <Border Background="{StaticResource SidebarBrush}" CornerRadius="15" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
-            <Grid Margin="12">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+             d:DesignHeight="600" d:DesignWidth="180">
 
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="55"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="35"/>
-                    </Grid.ColumnDefinitions>
+    <Border Background="{StaticResource SidebarBrush}" 
+            Width="180"
+            VerticalAlignment="Stretch"
+            CornerRadius="14,14,14,14" 
+            BorderBrush="{StaticResource BorderBrush}" 
+            BorderThickness="0,0,1,0">
 
-                    <Ellipse Width="40" Height="40" Stroke="{StaticResource BorderBrush}" StrokeThickness="1" Fill="{StaticResource CardBrush}" VerticalAlignment="Top"/>
+        <Grid Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Column="1" Margin="8,8,0,0">
-                        <TextBlock Text="{Binding UserName}" FontSize="16" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}"/>
-                        <TextBlock Text="{Binding UserRole}" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}"/>
-                    </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="45"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="30"/>
+                </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="2" Width="28" Height="28" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" FontSize="20" Cursor="Hand" Content="🏠"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="Dashboard"/>
-                </Grid>
+                <Ellipse Width="35" Height="35" Stroke="{StaticResource BorderBrush}" StrokeThickness="1" Fill="{StaticResource CardBrush}" VerticalAlignment="Top"/>
 
-                <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,40,0,0">
-
-                    <Button Style="{StaticResource SidebarMenuButton}" Content="Danh sách khám"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="PatientList"/>
-
-                    <Button Style="{StaticResource SidebarMenuButton}" Content="Tra cứu"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="PatientLookup"/>
-
-                    <Button Style="{StaticResource SidebarMenuButton}" Content="Lập hóa đơn"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="Invoice"/>
-
-                    <Button Style="{StaticResource SidebarMenuButton}" Content="Lập báo cáo"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="Report"/>
-
-                    <Button Style="{StaticResource SidebarMenuButton}" Content="Cập nhật quy định"
-                            Command="{Binding NavigationCommand}" 
-                            CommandParameter="Update"/>
+                <StackPanel Grid.Column="1" Margin="5,4,0,0" VerticalAlignment="Top">
+                    <TextBlock Text="{Binding UserName}" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryTextBrush}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding UserRole}" FontSize="11" Foreground="{StaticResource SecondaryTextBrush}" TextTrimming="CharacterEllipsis"/>
                 </StackPanel>
 
-                <Button Grid.Row="2" Style="{StaticResource SidebarMenuButton}" Content="Đăng xuất" Foreground="Red" Margin="0,20,0,0"
-                        Command="{Binding LogoutCommand}"/>
+                <Button Grid.Column="2" Width="26" Height="26" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" FontSize="16" Cursor="Hand" Content="🏠"
+                        Command="{Binding NavigationCommand}" 
+                        CommandParameter="Dashboard" />
             </Grid>
-        </Border>
-    </Grid>
+
+            <StackPanel Grid.Row="1" VerticalAlignment="Top" Margin="0,25,0,0">
+
+                <Button Content="Danh sách khám" HorizontalAlignment="Stretch"
+                        Command="{Binding NavigationCommand}" CommandParameter="PatientList">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarMenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Kế Toán">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Tra cứu" HorizontalAlignment="Stretch"
+                        Command="{Binding NavigationCommand}" CommandParameter="PatientLookup">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarMenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Kế Toán">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Lập hóa đơn" HorizontalAlignment="Stretch"
+        Command="{Binding NavigationCommand}" CommandParameter="Invoice">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarMenuButton}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Tiếp Tân">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Kế Toán">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Lập báo cáo" HorizontalAlignment="Stretch"
+                        Command="{Binding NavigationCommand}" CommandParameter="Report">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarMenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Tiếp Tân">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Bác Sĩ">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+                <Button Content="Cập nhật quy định" HorizontalAlignment="Stretch"
+                        Command="{Binding NavigationCommand}" CommandParameter="Update">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource SidebarMenuButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Tiếp Tân">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Kế Toán">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Source={x:Static services:AppState.Instance}, Path=CurrentUserRole}" Value="Bác Sĩ">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+
+            <Button Grid.Row="2" Style="{StaticResource SidebarMenuButton}" Content="Đăng xuất" Foreground="Red" Margin="0,20,0,0" HorizontalAlignment="Stretch"
+                    Command="{Binding LogoutCommand}"/>
+        </Grid>
+    </Border>
 </UserControl>

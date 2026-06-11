@@ -124,7 +124,7 @@ namespace ClinicManagement.UI.ViewModels
                     NgayKhamText = danhSachModel.NgayKham.ToString("dd/MM/yyyy", cultureVi);
 
                     string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
-                    if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("admin"))
+                    if (role.Contains("tiếp tân") || role.Contains("tieptan"))
                     {
                         IsAddButtonVisible = Visibility.Visible;
                     }
@@ -153,27 +153,30 @@ namespace ClinicManagement.UI.ViewModels
         {
             string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
 
-            if (role.Contains("bác sĩ") || role.Contains("doctor"))
+            // 🌟 1. BÁC SĨ CLICK -> VÀO TRANG KHÁM BỆNH
+            if (role.Contains("bác sĩ") || role.Contains("doctor") || role.Contains("bacsi"))
             {
                 Dispose();
                 string maPhieuKhamCũ = !string.IsNullOrEmpty(item.MaPhieuKham) ? item.MaPhieuKham : string.Empty;
+
+                // Lưu ý: Nếu code báo đỏ ở dòng này, bạn hãy mở file PrescriptionViewModel.cs ra 
+                // và kiểm tra xem hàm khởi tạo của nó đang yêu cầu truyền vào mấy tham số nhé.
                 _mainViewModel.CurrentView = new PrescriptionViewModel(_mainViewModel, item.BenhNhan, maPhieuKhamCũ);
             }
-            else if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("admin"))
+            // 🌟 2. TIẾP TÂN HOẶC KẾ TOÁN CLICK -> VÀO TRANG HÓA ĐƠN
+            else if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("kế toán") || role.Contains("ketoan"))
             {
                 if (!string.IsNullOrEmpty(item.MaPhieuKham) && item.TrangThai != "Chờ khám")
                 {
                     Dispose();
+
+                    // Lưu ý: Tương tự ở đây, kiểm tra constructor của InvoiceViewModel nếu có lỗi đỏ.
                     _mainViewModel.CurrentView = new InvoiceViewModel(_mainViewModel, item);
                 }
                 else
                 {
                     MessageBox.Show($"Bệnh nhân '{item.BenhNhan.HoTen}' đang ở trạng thái chờ, bác sĩ chưa kết thúc ca khám để lập hóa đơn!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-            }
-            else
-            {
-                MessageBox.Show("Tài khoản của bạn không có quyền thực hiện thao tác này.", "Truy cập bị từ chối", MessageBoxButton.OK, MessageBoxImage.Stop);
             }
         }
 
@@ -206,7 +209,7 @@ namespace ClinicManagement.UI.ViewModels
                 }
 
                 string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
-                if (role.Contains("tiếp tân") || role.Contains("tieptan") || role.Contains("admin"))
+                if (role.Contains("tiếp tân") || role.Contains("tieptan"))
                 {
                     IsAddButtonVisible = Visibility.Visible;
                 }
@@ -219,13 +222,21 @@ namespace ClinicManagement.UI.ViewModels
 
         private void ExecuteGoToForm()
         {
-            Dispose();
-            _mainViewModel.CurrentView = new RecievePatientViewModel(_mainViewModel, _danhSachKhamService);
+            string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
+            if (role.Contains("tiếp tân") || role.Contains("tieptan"))
+            {
+                Dispose();
+                _mainViewModel.CurrentView = new RecievePatientViewModel(_mainViewModel, _danhSachKhamService);
+            }
         }
 
         private void ExecuteXoaBenhNhan(ChiTietDanhSachKham item)
         {
             if (item == null) return;
+
+            string role = AppState.Instance.CurrentUserRole?.ToLower() ?? "";
+            if (!role.Contains("tiếp tân") && !role.Contains("tieptan")) return;
+
             if (MessageBox.Show($"Xóa bệnh nhân '{item.BenhNhan.HoTen}' khỏi danh sách hôm nay?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 if (AppState.Instance.DanhSachKhamHienTai?.ChiTietDanhSach != null)

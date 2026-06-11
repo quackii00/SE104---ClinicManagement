@@ -1,20 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
 using ClinicManagement.UI.Services;
 using ClinicManagement.UI.Models;
 using ClinicManagement.UI.DTOs;
+using ClinicManagement.UI.ViewModels;
 
 namespace ClinicManagement.UI.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly DanhSachKhamService _danhSachKhamService;
-
         private string _userRole;
         private string _userName;
         private object _currentView;
@@ -33,12 +33,12 @@ namespace ClinicManagement.UI.ViewModels
         public MainWindowViewModel()
         {
             _danhSachKhamService = new DanhSachKhamService();
-
             UserRole = AppState.Instance.CurrentUserRole;
             UserName = AppState.Instance.CurrentUserName;
 
             NavigationCommand = new RelayCommand(p => Navigate(p?.ToString()));
             LogoutCommand = new RelayCommand(p => Logout());
+
             CurrentView = new DashboardViewModel();
             _ = InitializeApplicationDataAsync();
         }
@@ -62,7 +62,7 @@ namespace ClinicManagement.UI.ViewModels
                     ChiTietDanhSach = new List<ChiTietDanhSachKham>()
                 };
 
-                if (responseData != null && responseData.ChiTietDanhSach != null)
+                if (responseData?.ChiTietDanhSach != null)
                 {
                     foreach (var item in responseData.ChiTietDanhSach)
                     {
@@ -70,32 +70,23 @@ namespace ClinicManagement.UI.ViewModels
                         {
                             STT = item.STT,
                             TrangThai = item.TrangThai,
-                            BenhNhan = new BenhNhan
-                            {
-                                MaBenhNhan = item.MaBenhNhan,
-                                HoTen = item.HoTen,
-                                GioiTinh = item.GioiTinh,
-                                NamSinh = item.NamSinh,
-                                DiaChi = item.DiaChi
-                            }
+                            MaPhieuKham = item.MaPhieuKham,
+                            BenhNhan = new BenhNhan { MaBenhNhan = item.MaBenhNhan, HoTen = item.HoTen, GioiTinh = item.GioiTinh, NamSinh = item.NamSinh, DiaChi = item.DiaChi }
                         });
                     }
-
                     AppState.Instance.SoLuongToiDaHeThong = responseData.SoBenhNhanToiDaNgay;
                     AppState.Instance.TongDoanhThuTrongNgay = responseData.TongDoanhThuNgay;
                 }
-
                 AppState.Instance.DanhSachKhamHienTai = danhSachModel;
                 IsDataLoaded = true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi nạp dữ liệu đầu ngày: {ex.Message}");
-                AppState.Instance.DanhSachKhamHienTai = new DanhSachKhamBenh { NgayKham = DateTime.Today, ChiTietDanhSach = new List<ChiTietDanhSachKham>() };
+                System.Diagnostics.Debug.WriteLine($"Lỗi nạp dữ liệu: {ex.Message}");
             }
         }
 
-        public void Navigate(string targetView)
+        public void Navigate(string targetView, object parameter = null)
         {
             if (string.IsNullOrEmpty(targetView)) return;
 
@@ -111,36 +102,46 @@ namespace ClinicManagement.UI.ViewModels
                     CurrentView = new PatientLookupViewModel(this);
                     break;
                 case "Invoice":
-                    // Nếu bấm từ Sidebar mà chưa chọn bệnh nhân, điều hướng về PatientList để chọn
-                    CurrentView = new PatientListViewModel(this);
+                    if (parameter is ChiTietDanhSachKham patientContext)
+                        CurrentView = new InvoiceViewModel(this, patientContext);
+                    else
+                        CurrentView = new PatientListViewModel(this);
                     break;
+                case "MedicalRecord":
+                    if (parameter is MedicalRecordViewModel mrvm)
+                        CurrentView = mrvm;
+                    break;
+                // BẠN THIẾU ĐOẠN NÀY NÊN NÓ MỚI NHẢY VỀ DASHBOARD:
                 case "Report":
-                    CurrentView = new ReportViewModel();
+                    CurrentView = new ReportViewModel(); // Hoặc ViewModel báo cáo của bạn
                     break;
+                
                 default:
                     CurrentView = new DashboardViewModel();
                     break;
             }
         }
-
         private void Logout()
         {
+            // 1. Xóa sạch dữ liệu phiên
+            new TokenStorageService().ClearToken();
             AppState.Instance.Reset();
-            Window activeMainWindow = null;
 
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.GetType().FullName == "ClinicManagement.UI.MainWindow" && window.IsVisible)
-                {
-                    activeMainWindow = window;
-                    break;
-                }
-            }
+            // 2. Tạo cửa sổ đăng nhập mới
+            var loginWindow = new LoginWindow();
 
-            LoginWindow loginWindow = new LoginWindow();
+            // 3. Đặt nó làm cửa sổ chính của ứng dụng trước khi đóng màn hình cũ
+            Application.Current.MainWindow = loginWindow;
             loginWindow.Show();
 
-            activeMainWindow?.Close();
+            // 4. Đóng cửa sổ hiện tại (MainWindow)
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window != loginWindow)
+                {
+                    window.Close();
+                }
+            }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null) =>
