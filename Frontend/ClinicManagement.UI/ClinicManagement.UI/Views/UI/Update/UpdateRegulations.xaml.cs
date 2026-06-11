@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClinicManagement.UI.ViewModels;
 
 namespace ClinicManagement.UI.Views.UI.Update
 {
@@ -21,6 +22,9 @@ namespace ClinicManagement.UI.Views.UI.Update
         public UpdateRegulations()
         {
             InitializeComponent();
+
+            // Gắn ViewModel để xử lý nạp/gửi dữ liệu cập nhật quy định qua QuyDinhService
+            DataContext = new UpdateRegulationsViewModel();
         }
     }
 }

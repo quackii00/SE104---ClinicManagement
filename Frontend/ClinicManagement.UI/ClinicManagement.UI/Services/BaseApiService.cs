@@ -8,11 +8,13 @@ namespace ClinicManagement.UI.Services
 {
     public class BaseApiService
     {
-        // Tên biến HttpClient trong dự án của bạn là Client
+        // Tên biến HttpClient trong dự án của bạn là Client.
+        // URL gốc KHÔNG hard-code: đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
         protected static readonly HttpClient Client = new HttpClient
         {
-            BaseAddress = new Uri("https://clinic-management-api-w2up.onrender.com/api/"),
-            Timeout = TimeSpan.FromSeconds(30)
+            BaseAddress = new Uri(AppConfig.ApiBaseUrl),
+            // Render gói free "ngủ" khi không dùng -> request đầu tiên có thể chờ vài chục giây để server thức dậy.
+            Timeout = TimeSpan.FromSeconds(60)
         };
 
         private void PrepareAuthHeader()
