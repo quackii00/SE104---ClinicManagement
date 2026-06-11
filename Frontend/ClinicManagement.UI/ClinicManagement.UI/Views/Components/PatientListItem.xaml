@@ -40,6 +40,31 @@
                       SelectedValuePath="Content"
                       IsHitTestVisible="False"
                       Focusable="False">
+                <ComboBox.Style>
+                    <Style TargetType="ComboBox">
+                        <!-- Mặc định (trạng thái khác) -->
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Foreground" Value="#555555"/>
+                        <Setter Property="Background" Value="#EEEEEE"/>
+                        <Style.Triggers>
+                            <!-- Chờ khám -> vàng -->
+                            <DataTrigger Binding="{Binding TrangThai}" Value="Chờ khám">
+                                <Setter Property="Background" Value="#FFF3CD"/>
+                                <Setter Property="Foreground" Value="#8A6D00"/>
+                            </DataTrigger>
+                            <!-- Đang khám -> xanh dương -->
+                            <DataTrigger Binding="{Binding TrangThai}" Value="Đang khám">
+                                <Setter Property="Background" Value="#CCE5FF"/>
+                                <Setter Property="Foreground" Value="#084298"/>
+                            </DataTrigger>
+                            <!-- Đã khám -> xanh lá -->
+                            <DataTrigger Binding="{Binding TrangThai}" Value="Đã khám">
+                                <Setter Property="Background" Value="#D4EDDA"/>
+                                <Setter Property="Foreground" Value="#1E7E34"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
                 <ComboBoxItem Content="Chờ khám"/>
                 <ComboBoxItem Content="Đang khám"/>
                 <ComboBoxItem Content="Đã khám"/>
