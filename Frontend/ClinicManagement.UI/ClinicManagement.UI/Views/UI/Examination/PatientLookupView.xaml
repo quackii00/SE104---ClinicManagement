@@ -64,26 +64,26 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <Border Grid.Row="0" 
-                            Background="#D0E7FF" 
-                            CornerRadius="8,8,0,0" 
-                            Padding="20,14,35,14">
+                    <Border Grid.Row="0"
+                            Background="#D0E7FF"
+                            CornerRadius="8,8,0,0"
+                            Padding="30,14,30,14">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="45"/>
-                                <ColumnDefinition Width="2.0*"/>
-                                <ColumnDefinition Width="1.1*"/>
-                                <ColumnDefinition Width="1.4*"/>
-                                <ColumnDefinition Width="1.5*"/>
-                                <ColumnDefinition Width="2.5*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1.3*"/>
+                                <ColumnDefinition Width="1.6*"/>
+                                <ColumnDefinition Width="1.6*"/>
+                                <ColumnDefinition Width="2.2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="STT" FontWeight="SemiBold" Opacity="0.8"/>
-                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="2" Text="Năm Sinh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="3" Text="Ngày Khám" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="4" Text="Loại Bệnh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
-                            <TextBlock Grid.Column="5" Text="Triệu Chứng" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="0" Text="STT" FontWeight="SemiBold" Opacity="0.8" TextTrimming="None"/>
+                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
+                            <TextBlock Grid.Column="2" Text="Năm Sinh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
+                            <TextBlock Grid.Column="3" Text="Ngày Khám" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
+                            <TextBlock Grid.Column="4" Text="Loại Bệnh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
+                            <TextBlock Grid.Column="5" Text="Triệu Chứng" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
                         </Grid>
                     </Border>
 
@@ -108,11 +108,11 @@
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="45"/>
-                                                <ColumnDefinition Width="2.0*"/>
-                                                <ColumnDefinition Width="1.1*"/>
-                                                <ColumnDefinition Width="1.4*"/>
-                                                <ColumnDefinition Width="1.5*"/>
-                                                <ColumnDefinition Width="2.5*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="1.3*"/>
+                                                <ColumnDefinition Width="1.6*"/>
+                                                <ColumnDefinition Width="1.6*"/>
+                                                <ColumnDefinition Width="2.2*"/>
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Grid.Column="0" Text="{Binding STT}" VerticalAlignment="Center" Opacity="0.7"/>
