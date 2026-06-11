@@ -46,6 +46,13 @@ namespace ClinicManagement.UI.Services
         public string LastUsedEmail { get; set; }
         public string LastUsedRole { get; set; }
 
+        /// <summary>
+        /// JWT do Backend cấp sau khi đăng nhập. BaseApiService sẽ tự đính kèm token này
+        /// vào header Authorization của mọi request để qua được cổng [Authorize] phía Server.
+        /// (Hiện màn hình Login đang mock — cần lưu token thật vào đây khi tích hợp đăng nhập.)
+        /// </summary>
+        public string AuthToken { get; set; }
+
 
         // =========================================================================
         // --- BỔ SUNG: ĐỒNG BỘ DỮ LIỆU NGHIỆP VỤ TĂNG GIẢM THỜI GIAN THỰC ---
@@ -105,6 +112,7 @@ namespace ClinicManagement.UI.Services
             CurrentUserName = null;
             CurrentUserRole = null;
             CurrentUserEmail = null;
+            AuthToken = null;
             DanhSachKhamHienTai = null;
             TongDoanhThuTrongNgay = 0;
         }

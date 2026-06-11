@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClinicManagement.UI.ViewModels;
 
 namespace ClinicManagement.UI.Views.UI.Report
 {
@@ -21,6 +22,9 @@ namespace ClinicManagement.UI.Views.UI.Report
         public MedicineUsageReportView()
         {
             InitializeComponent();
+
+            // Gắn ViewModel xử lý gọi API báo cáo sử dụng thuốc (BM5.2)
+            DataContext = new MedicineUsageReportViewModel();
         }
     }
 }

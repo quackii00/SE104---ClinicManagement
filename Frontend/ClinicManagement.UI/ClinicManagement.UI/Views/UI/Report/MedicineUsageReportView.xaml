@@ -31,11 +31,13 @@
                            VerticalAlignment="Center"/>
 
                 <DatePicker Width="130"
-                            Margin="15,0"/>
+                            Margin="15,0"
+                            SelectedDate="{Binding SelectedDate}"/>
 
                 <Button Content="Lập báo cáo"
                         Style="{StaticResource PrimaryButton}"
                         Margin="30,0"
+                        Command="{Binding LapBaoCaoCommand}"
                         />
             </StackPanel>
 
@@ -48,7 +50,9 @@
                 <DataGrid AutoGenerateColumns="False"
                           HeadersVisibility="Column"
                           GridLinesVisibility="Vertical"
-                          CanUserAddRows="False">
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          ItemsSource="{Binding ChiTiet}">
 
                     <DataGrid.Columns>
 
@@ -62,7 +66,7 @@
 
                         <DataGridTextColumn Header="Đơn vị"
                                             Width="150"
-                                            Binding="{Binding DonVi}"/>
+                                            Binding="{Binding DonViTinh}"/>
 
                         <DataGridTextColumn Header="Số lượng"
                                             Width="150"
