@@ -42,12 +42,20 @@
                         <TextBox Text="{Binding PatientName, Mode=OneWay}" IsReadOnly="True" Background="Transparent" VerticalContentAlignment="Center" Height="26" Margin="0,0,0,10"/>
 
                         <TextBlock Text="Ngày khám" Opacity="0.8" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding NgayKhamText, Mode=OneWay}" IsReadOnly="True" Background="Transparent" VerticalContentAlignment="Center" Height="26" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding NgayKhamText, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 Background="Transparent"
+                                 VerticalContentAlignment="Center"
+                                 Height="26"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Margin="15,0,0,0">
                         <TextBlock Text="Triệu chứng" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding TrieuChung, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Height="26" Margin="0,0,0,10"/>
+                        <TextBox Text="{Binding TrieuChung, UpdateSourceTrigger=PropertyChanged}" 
+                                 IsReadOnly="{Binding IsReadOnly}"
+                                 VerticalContentAlignment="Center" 
+                                 Height="26" 
+                                 Margin="0,0,0,10"/>
 
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -55,14 +63,15 @@
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Margin="0,0,5,0">
-                                <TextBlock Text="Chẩn đoán" Margin="0,0,0,4"/>
-                                <TextBox Text="{Binding ChanDoan, UpdateSourceTrigger=PropertyChanged}" VerticalContentAlignment="Center" Height="26"/>
-                            </StackPanel>
+                            <StackPanel Grid.ColumnSpan="2">
+                                <TextBlock Text="Chẩn đoán loại bệnh" Margin="0,0,0,4"/>
 
-                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
-                                <TextBlock Text="Loại bệnh (Quy định 2)" Margin="0,0,0,4"/>
-                                <ComboBox ItemsSource="{Binding DanhSachLoaiBenh}" SelectedItem="{Binding LoaiBenhDuDoan}" Height="26"/>
+                                <ComboBox Height="26"
+                                          ItemsSource="{Binding DanhSachLoaiBenh}"
+                                          DisplayMemberPath="TenLoaiBenh" 
+                                          SelectedValuePath="MaLoaiBenh"
+                                          IsEnabled="{Binding IsEditable}"
+                                          SelectedValue="{Binding BenhDuocChanDoan, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -88,11 +97,11 @@
 
                     <Grid Grid.Row="1" Margin="10,0,10,5">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2.5*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2*"/>
-                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="2.2*"/>
+                            <ColumnDefinition Width="0.8*"/>
+                            <ColumnDefinition Width="0.8*"/>
+                            <ColumnDefinition Width="1.8*"/>
+                            <ColumnDefinition Width="35"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Thuốc" FontWeight="Bold" Opacity="0.7"/>
                         <TextBlock Grid.Column="1" Text="Đơn vị" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
@@ -104,7 +113,7 @@
                         <ItemsControl ItemsSource="{Binding ToaThuocDangKe}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <components:MedicineRow Margin="0,0,0,6"/>
+                                    <components:MedicineRow IsEnabled="{Binding IsRowEnabled}" Margin="0,0,0,6"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -117,6 +126,7 @@
                             Margin="5,5,0,0"
                             HorizontalAlignment="Left"
                             Style="{StaticResource CancelButton}"
+                            Visibility="{Binding AddButtonVisibility}"
                             Command="{Binding ThemThuocCommand}"/>
                 </Grid>
 
@@ -130,9 +140,10 @@
                             Height="32"
                             Margin="10,0"
                             Style="{StaticResource PrimaryButton}"
+                            Visibility="{Binding AddButtonVisibility}"
                             Command="{Binding HoanTatKhamCommand}"/>
 
-                    <Button Content="Hủy"
+                    <Button Content="Quay lại"
                             Width="100"
                             Height="32"
                             Margin="10,0"

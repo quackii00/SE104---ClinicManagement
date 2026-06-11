@@ -3,93 +3,139 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="800">
-    <Grid>
+
+    <Grid Background="Transparent">
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
 
             <Grid Margin="20">
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Back -->
-                <Button Content="←"
-                    FontSize="30"
-                    Width="40"
-                    Height="40"
-                    HorizontalAlignment="Left"
-                    Background="Transparent"
-                    BorderBrush="Transparent"/>
+                <Grid Grid.Row="0" Margin="0,0,0,15">
+                    <Button Content="←"
+                            FontSize="22"
+                            FontWeight="Bold"
+                            Width="40"
+                            Height="40"
+                            HorizontalAlignment="Left"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            Cursor="Hand"
+                            Command="{Binding BackCommand}"/>
 
-                <!-- Info -->
-                <StackPanel Grid.Row="1"
-                        Margin="20">
+                    <TextBlock Text="Hồ Sơ Lịch Sử Khám Bệnh"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Grid>
 
-                    <TextBlock Text="{Binding FullName}"
-                           FontSize="16"/>
+                <Border Grid.Row="1" 
+                        Background="#F0F4F8" 
+                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="12" 
+                        Padding="20,15" 
+                        Margin="0,0,0,20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.8*"/>
+                            <ColumnDefinition Width="0.7*"/>
+                            <ColumnDefinition Width="0.7*"/>
+                            <ColumnDefinition Width="1.8*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{Binding Gender}"
-                           Margin="0,10,0,0"/>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Họ tên bệnh nhân" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding HoTen, FallbackValue='Nguyễn Văn A'}" FontSize="15" FontWeight="SemiBold" Foreground="#111111"/>
+                        </StackPanel>
 
-                    <TextBlock Text="{Binding BirthDate}"/>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Giới tính" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding GioiTinh, FallbackValue='Nam'}" FontSize="14" FontWeight="Medium"/>
+                        </StackPanel>
 
-                </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Năm sinh" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding NamSinh, FallbackValue='2000'}" FontSize="14" FontWeight="Medium"/>
+                        </StackPanel>
 
-                <!-- History -->
-                <Border Grid.Row="2"
-                    Margin="0,20,0,0"
-                   >
-
-                    <DataGrid ItemsSource="{Binding Histories}"
-                          AutoGenerateColumns="False"
-                          Margin="10">
-
-                        <DataGrid.Columns>
-
-                            <DataGridTextColumn Header="Ngày khám"
-                                            Width="200"
-                                            Binding="{Binding ExaminationDate}"/>
-
-                            <DataGridTextColumn Header="Loại bệnh"
-                                            Width="*"
-                                            Binding="{Binding DiseaseType}"/>
-
-                            <DataGridTemplateColumn Width="80">
-
-                                <DataGridTemplateColumn.CellTemplate>
-
-                                    <DataTemplate>
-
-                                        <Button Content="Xem"
-                                            Command="{Binding DataContext.ViewDetailCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-
-                                    </DataTemplate>
-
-                                </DataGridTemplateColumn.CellTemplate>
-
-                            </DataGridTemplateColumn>
-
-                        </DataGrid.Columns>
-
-                    </DataGrid>
-
+                        <StackPanel Grid.Column="3" Margin="10,0,0,0">
+                            <TextBlock Text="Địa chỉ" FontSize="12" Opacity="0.6" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding DiaChi, FallbackValue='Chưa cập nhật'}" FontSize="14" FontWeight="Medium" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
+                <Border Grid.Row="2" Background="#E6F2FF" CornerRadius="15" Padding="5">
+                    <DataGrid ItemsSource="{Binding Histories}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              Background="White"
+                              RowHeight="50"
+                              GridLinesVisibility="Horizontal"
+                              HorizontalGridLinesBrush="#E0E0E0"
+                              BorderThickness="0"
+                              HeadersVisibility="Column"
+                              Padding="0,5">
+
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Style>
+                        </DataGrid.CellStyle>
+
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#D0E7FF"/>
+                                <Setter Property="Foreground" Value="#111111"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Padding" Value="12,8"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Width="90" Header="Thao tác">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding DataContext.ViewDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                                CommandParameter="{Binding}"
+                                                Background="#3182CE" 
+                                                Foreground="White" 
+                                                BorderThickness="0" 
+                                                Margin="0"
+                                                Cursor="Hand">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                            <TextBlock Text="Xem" FontSize="12" FontWeight="SemiBold"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Ngày khám" Width="130" Binding="{Binding NgayKham, StringFormat=\{0:dd/MM/yyyy\}}"/>
+                            <DataGridTextColumn Header="Chẩn đoán loại bệnh" Width="1.5*" Binding="{Binding TenLoaiBenh, FallbackValue='Chưa kết luận'}"/>
+                            <DataGridTextColumn Header="Triệu chứng" Width="2*" Binding="{Binding TrieuChung, FallbackValue='Không ghi nhận'}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
             </Grid>
-
-
-
         </Border>
-
     </Grid>
 </UserControl>

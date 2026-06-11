@@ -1,19 +1,15 @@
-using System;
+﻿using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace ClinicManagement.UI.Services
 {
-    /// <summary>
-    /// Lớp dịch vụ nền tảng (Base) cấu hình HttpClient dùng chung.
-    /// Tất cả các Service chức năng khác sẽ kế thừa từ đây để gửi/nhận dữ liệu với Backend.
-    /// </summary>
     public class BaseApiService
     {
-        // Khởi tạo một HttpClient độc nhất (static) để dùng xuyên suốt chu kỳ chạy app.
-        // URL gốc KHÔNG hard-code ở đây mà đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
+        // Tên biến HttpClient trong dự án của bạn là Client.
+        // URL gốc KHÔNG hard-code: đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
         protected static readonly HttpClient Client = new HttpClient
         {
             BaseAddress = new Uri(AppConfig.ApiBaseUrl),
@@ -21,105 +17,91 @@ namespace ClinicManagement.UI.Services
             Timeout = TimeSpan.FromSeconds(60)
         };
 
-        /// <summary>
-        /// Đính kèm JWT (nếu đã đăng nhập) vào header Authorization trước mỗi request.
-        /// Các endpoint quy định/báo cáo phía Backend đều yêu cầu [Authorize] nên bước này là bắt buộc.
-        /// </summary>
-        private static void ApplyAuthHeader()
+        private void PrepareAuthHeader()
         {
             var token = AppState.Instance.AuthToken;
-            Client.DefaultRequestHeaders.Authorization =
-                string.IsNullOrWhiteSpace(token)
-                    ? null
-                    : new AuthenticationHeaderValue("Bearer", token);
+            if (!string.IsNullOrEmpty(token))
+            {
+                Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                Client.DefaultRequestHeaders.Authorization = null;
+            }
         }
 
-        /// <summary>
-        /// Hàm dùng chung để gửi yêu cầu lấy dữ liệu từ Server (GET)
-        /// </summary>
-        protected async Task<T> GetAsync<T>(string endpoint)
+        protected async Task<T?> GetAsync<T>(string endpoint)
         {
             try
             {
-                ApplyAuthHeader();
-                HttpResponseMessage response = await Client.GetAsync(endpoint);
-
-                // Nếu Server trả về mã 200-299 thành công, tự động đọc và ép kiểu JSON sang DTO
+                PrepareAuthHeader();
+                var response = await Client.GetAsync(endpoint);
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadFromJsonAsync<T>();
                 }
-
-                throw new HttpRequestException(await BuildErrorAsync(response));
+                return default;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[BaseApiService GET Error]: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi GET: {ex.Message}");
+                return default;
             }
         }
 
         /// <summary>
-        /// Hàm dùng chung để gửi dữ liệu lên Server xử lý (POST)
+        /// 🌟 ĐÃ SỬA: Bọc try-catch an toàn cho POST để hứng lỗi 400 Bad Request và in chi tiết lỗi
         /// </summary>
-        protected async Task<TResponse> PostAsync<TRequest, TResponse>(string endpoint, TRequest data)
+        protected async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest data)
         {
             try
             {
-                ApplyAuthHeader();
-                HttpResponseMessage response = await Client.PostAsJsonAsync(endpoint, data);
+                PrepareAuthHeader();
+                var response = await Client.PostAsJsonAsync(endpoint, data);
+
+                // Nếu Server xử lý thành công (Mã 200)
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<TResponse>();
+                }
+
+                // 🌟 CHÌA KHÓA PHÁ ÁN: Nếu dính lỗi 400, 403, 500... bốc chuỗi giải thích từ Server ra log
+                var errorContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine("======================= [SERVER BAD REQUEST LOG] =======================");
+                System.Diagnostics.Debug.WriteLine($"[API Error tại Endpoint {endpoint}]: Mã lỗi {response.StatusCode}");
+                System.Diagnostics.Debug.WriteLine($"[Chi tiết lỗi từ Backend]: {errorContent}");
+                System.Diagnostics.Debug.WriteLine("========================================================================");
+
+                return default; // Trả về null để ViewModel biết đường xử lý chặn giao diện, không làm sập app
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối POST bất ngờ: {ex.Message}");
+                return default;
+            }
+        }
+
+        protected async Task<TResponse?> PutAsync<TRequest, TResponse>(string endpoint, TRequest requestData)
+        {
+            try
+            {
+                PrepareAuthHeader();
+                var response = await Client.PutAsJsonAsync(endpoint, requestData);
 
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadFromJsonAsync<TResponse>();
                 }
 
-                throw new HttpRequestException(await BuildErrorAsync(response));
+                var errorContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] PUT Lỗi Server: {errorContent}");
+                return default;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[BaseApiService POST Error]: {ex.Message}");
-                throw;
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối PUT: {ex.Message}");
+                return default;
             }
-        }
-
-        /// <summary>
-        /// Hàm dùng chung để gửi dữ liệu CẬP NHẬT lên Server (PUT).
-        /// Dùng cho các thao tác sửa đổi bản ghi đã tồn tại (vd: cập nhật quy định/tham số).
-        /// </summary>
-        protected async Task<TResponse> PutAsync<TRequest, TResponse>(string endpoint, TRequest data)
-        {
-            try
-            {
-                ApplyAuthHeader();
-                HttpResponseMessage response = await Client.PutAsJsonAsync(endpoint, data);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadFromJsonAsync<TResponse>();
-                }
-
-                throw new HttpRequestException(await BuildErrorAsync(response));
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[BaseApiService PUT Error]: {ex.Message}");
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Gom mã lỗi + nội dung body (thường là {"message": "..."} do Backend trả về)
-        /// thành một thông điệp dễ đọc để ViewModel hiển thị cho người dùng.
-        /// </summary>
-        private static async Task<string> BuildErrorAsync(HttpResponseMessage response)
-        {
-            string body = string.Empty;
-            try { body = await response.Content.ReadAsStringAsync(); } catch { /* bỏ qua */ }
-
-            return string.IsNullOrWhiteSpace(body)
-                ? $"Lỗi hệ thống từ Server: {(int)response.StatusCode} {response.StatusCode}"
-                : $"Lỗi từ Server ({(int)response.StatusCode}): {body}";
         }
     }
 }

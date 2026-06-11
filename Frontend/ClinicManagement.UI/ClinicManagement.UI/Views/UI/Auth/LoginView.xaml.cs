@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using ClinicManagement.UI.ViewModels;
 
 namespace ClinicManagement.UI.Views.UI.Auth
@@ -14,20 +15,13 @@ namespace ClinicManagement.UI.Views.UI.Auth
             DataContext = new LoginViewModel();
         }
 
-        private void PasswordBox_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (DataContext is LoginViewModel vm)
+            if (DataContext is LoginViewModel vm && sender is PasswordBox passwordBox)
             {
-                vm.Password = PasswordBox.Password;
+                vm.Password = passwordBox.Password;
             }
         }
 
-        private void EmailTextBox_LostFocus(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (DataContext is LoginViewModel vm)
-            {
-                vm.OnEmailLostFocus();
-            }
-        }
     }
 }

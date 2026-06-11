@@ -152,16 +152,20 @@ namespace ClinicManagement.UI.ViewModels
                     SoBenhNhanToiDaNgay = soBenhNhan,
                     TienKham = tienKham
                 };
-                var result = await _quyDinhService.CapNhatQuyDinhAsync(request);
+                var result = await _quyDinhService.UpdateThamSoAsync(request);
 
-                // 3) Server đã lưu vào CSDL & trả về số liệu mới nhất → cập nhật lại UI + kho dùng chung
-                if (result != null)
+                // 3) QuyDinhService trả null nếu Server báo lỗi / mất kết nối
+                if (result == null)
                 {
-                    SoLoaiBenh = result.SoLoaiBenh;
-                    SoLoaiThuoc = result.SoLoaiThuoc;
-                    SoCachDung = result.SoCachDung;
-                    AppState.Instance.SoLuongToiDaHeThong = result.SoBenhNhanToiDaNgay;
+                    MessageBox.Show("Cập nhật thất bại. Kiểm tra kết nối hoặc quyền Admin rồi thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
+
+                // Server đã lưu vào CSDL & trả về số liệu mới nhất → cập nhật lại UI + kho dùng chung
+                SoLoaiBenh = result.SoLoaiBenh;
+                SoLoaiThuoc = result.SoLoaiThuoc;
+                SoCachDung = result.SoCachDung;
+                AppState.Instance.SoLuongToiDaHeThong = result.SoBenhNhanToiDaNgay;
 
                 MessageBox.Show("Cập nhật quy định thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }

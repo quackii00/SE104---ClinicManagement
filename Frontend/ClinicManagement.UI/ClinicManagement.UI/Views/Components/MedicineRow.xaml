@@ -1,33 +1,55 @@
 ﻿<UserControl x:Class="ClinicManagement.UI.Views.Components.MedicineRow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.Components"
-             mc:Ignorable="d" 
-             d:DesignHeight="45" d:DesignWidth="600">
-    <Grid Margin="0,5">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="40"
+             d:DesignWidth="700">
 
+    <Grid Margin="0,2">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="2.2*"/>
+            <ColumnDefinition Width="0.8*"/>
+            <ColumnDefinition Width="0.8*"/>
+            <ColumnDefinition Width="1.8*"/>
             <ColumnDefinition Width="40"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Column="0"/>
+        <ComboBox Grid.Column="0"
+                  Height="28"
+                  Margin="0,0,5,0"
+                  ItemsSource="{Binding DanhSachThuocDto}"
+                  SelectedItem="{Binding SelectedThuoc}"
+                  DisplayMemberPath="TenThuoc"/>
 
-        <ComboBox Grid.Column="1"/>
+        <TextBlock Grid.Column="1"
+                   Text="{Binding DonViTinh}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"/>
 
-        <TextBox Grid.Column="2"/>
+        <TextBox Grid.Column="2"
+                 Height="28"
+                 Margin="5,0"
+                 Text="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalContentAlignment="Center"
+                 HorizontalContentAlignment="Center"/>
 
-        <TextBox Grid.Column="3"/>
+        <ComboBox Grid.Column="3"
+                  Height="28"
+                  Margin="5,0"
+                  ItemsSource="{Binding DanhSachCachDungDto}"
+                  SelectedItem="{Binding SelectedCachDung}"
+                  DisplayMemberPath="MoTaCachDung"/>
 
         <Button Grid.Column="4"
-            Content="✕"
-            BorderThickness="0"
-            Background="Transparent"/>
-
+                Width="28"
+                Height="28"
+                Content="✕"
+                FontWeight="Bold"
+                Background="#FFE74C3C"
+                Foreground="White"
+                BorderThickness="0"
+                Command="{Binding XoaThuocCommand}" />
     </Grid>
 </UserControl>

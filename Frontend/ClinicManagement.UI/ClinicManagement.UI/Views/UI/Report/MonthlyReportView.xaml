@@ -7,96 +7,179 @@
              mc:Ignorable="d" 
              d:DesignHeight="660" d:DesignWidth="800">
     <Grid>
-        <Border BorderBrush="{StaticResource BorderBrush}" 
-        BorderThickness="1" 
-        CornerRadius="15" 
-        Background="{StaticResource CardBrush}">
-
-            <Grid Margin="20">
-
+        <Grid Margin="10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Filter -->
-            <StackPanel Orientation="Horizontal"
-                        Margin="10">
-
+            <StackPanel Orientation="Horizontal" Margin="10">
                 <TextBlock Text="Tháng:"
-                           FontSize="22"
+                           FontSize="16"
+                           FontWeight="Medium"
                            VerticalAlignment="Center"/>
 
-                <DatePicker Width="130"
-                            Margin="15,0"
-                            SelectedDate="{Binding SelectedDate}"/>
+                <ComboBox Width="80"
+                          Margin="10,0"
+                          Height="35"
+                          VerticalContentAlignment="Center"
+                          SelectedValuePath="Content"
+                          SelectedValue="{Binding SelectedMonthNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBoxItem Content="1"/>
+                    <ComboBoxItem Content="2"/>
+                    <ComboBoxItem Content="3"/>
+                    <ComboBoxItem Content="4"/>
+                    <ComboBoxItem Content="5"/>
+                    <ComboBoxItem Content="6"/>
+                    <ComboBoxItem Content="7"/>
+                    <ComboBoxItem Content="8"/>
+                    <ComboBoxItem Content="9"/>
+                    <ComboBoxItem Content="10"/>
+                    <ComboBoxItem Content="11"/>
+                    <ComboBoxItem Content="12"/>
+                </ComboBox>
+
+                <TextBlock Text="Năm:"
+                           FontSize="16"
+                           FontWeight="Medium"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"/>
+
+                <ComboBox Width="100"
+                          Margin="10,0"
+                          Height="35"
+                          VerticalContentAlignment="Center"
+                          SelectedValuePath="Content"
+                          SelectedValue="{Binding SelectedYearNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ComboBoxItem Content="2024"/>
+                    <ComboBoxItem Content="2025"/>
+                    <ComboBoxItem Content="2026"/>
+                    <ComboBoxItem Content="2027"/>
+                    <ComboBoxItem Content="2028"/>
+                </ComboBox>
 
                 <Button Content="Lập báo cáo"
                         Style="{StaticResource PrimaryButton}"
-                        Margin="30,0"
-                        Command="{Binding LapBaoCaoCommand}"
-                        />
+                        Width="120"
+                        Height="35"
+                        Margin="15,0"
+                        Command="{Binding LoadMonthlyReportCommand}"/>
+
+                <Grid VerticalAlignment="Center" Margin="15,0"
+                      Visibility="{Binding IsDataLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Loading..." Foreground="{StaticResource PrimaryTextBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Ellipse Width="12" Height="12" Fill="{StaticResource PrimaryTextBrush}" RenderTransformOrigin="0.5, 0.5">
+                            <Ellipse.RenderTransform>
+                                <RotateTransform x:Name="Spinner"/>
+                            </Ellipse.RenderTransform>
+                            <Ellipse.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetName="Spinner" Storyboard.TargetProperty="Angle" From="0" To="360" Duration="0:0:1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Ellipse.Triggers>
+                        </Ellipse>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
 
-            <!-- Data -->
             <Border Grid.Row="1"
-                    Margin="0,15"
-                    BorderBrush="{StaticResource BorderBrush}"
-                    BorderThickness="1">
+                    Margin="10,15,10,10"
+                    Background="#E6F2FF" 
+                    CornerRadius="10"
+                    Padding="8">
 
-                <DataGrid AutoGenerateColumns="False"
+                <DataGrid ItemsSource="{Binding MonthlyReportItems}"
+                          AutoGenerateColumns="False"
                           HeadersVisibility="Column"
-                          GridLinesVisibility="Vertical"
+                          GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#E0E0E0"
                           CanUserAddRows="False"
                           IsReadOnly="True"
-                          ItemsSource="{Binding ChiTiet}">
+                          Background="White"
+                          RowHeight="38"
+                          BorderThickness="0">
+
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#D0E7FF"/>
+                            <Setter Property="Foreground" Value="#111111"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="Padding" Value="12,8"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Padding" Value="10,0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGridCell">
+                                        <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                                            <ContentPresenter VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.Resources>
 
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="STT" Width="60" Binding="{Binding STT}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="STT"
-                                            Width="50"
-                                            Binding="{Binding STT}"/>
+                        <DataGridTextColumn Header="Ngày" Width="150" Binding="{Binding Ngay, StringFormat=\{0:dd/MM/yyyy\}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Ngày"
-                                            Width="150"
-                                            Binding="{Binding Ngay}"/>
+                        <DataGridTextColumn Header="Số bệnh nhân" Width="150" Binding="{Binding SoBenhNhan, StringFormat=\{0:N0\}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="0,0,25,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Số bệnh nhân"
-                                            Width="170"
-                                            Binding="{Binding SoBenhNhan}"/>
+                        <DataGridTextColumn Header="Doanh thu" Width="*" Binding="{Binding DoanhThu, StringFormat=\{0:N0\} VNĐ}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="0,0,25,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Doanh thu"
-                                            Width="180"
-                                            Binding="{Binding DoanhThu}"/>
-
-                        <DataGridTextColumn Header="Tỷ lệ"
-                                            Width="100"
-                                            Binding="{Binding TyLe}"/>
-
+                        <DataGridTextColumn Header="Tỷ lệ" Width="120" Binding="{Binding TyLe, StringFormat=\{0:N1\}%}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    <Setter Property="Margin" Value="0,0,25,0"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                     </DataGrid.Columns>
-
                 </DataGrid>
-
             </Border>
 
-            <!-- Footer -->
-            <StackPanel Grid.Row="2"
-                        Orientation="Horizontal"
-                        Margin="20,10">
-
-                <TextBlock Text="Tổng doanh thu:"
-                           VerticalAlignment="Center"/>
-
-                <TextBox Width="150"
-                         Margin="10,0"
-                         IsReadOnly="True"
-                         BorderBrush="{StaticResource BorderBrush}"
-                         Text="{Binding TongDoanhThu, Mode=OneWay, StringFormat=N0}"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,5,20,15">
+                <TextBlock Text="Tổng doanh thu:" FontWeight="Medium" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <TextBox Width="200" Height="35" VerticalContentAlignment="Center" HorizontalContentAlignment="Right" Padding="8,0" IsReadOnly="True" FontWeight="Bold" Foreground="Crimson" Text="{Binding TotalMonthlyRevenue, StringFormat=\{0:N0\} VNĐ}"/>
             </StackPanel>
-
         </Grid>
-
-        </Border>
     </Grid>
 </UserControl>

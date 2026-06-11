@@ -1,35 +1,241 @@
+﻿using ClinicManagement.UI.DTOs;
+using System;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-using ClinicManagement.UI.DTOs;
 
 namespace ClinicManagement.UI.Services
 {
     /// <summary>
-    /// YC6 – Service gọi API nhóm "Cập nhật quy định".
-    /// BẮT BUỘC kế thừa BaseApiService để dùng chung HttpClient + tự đính kèm JWT.
-    /// Trỏ tới controller Backend: [Route("api/quydinh")] (yêu cầu quyền Admin).
+    /// Service tương tác với QuyDinhController của API (Yêu cầu vai trò Admin)
     /// </summary>
     public class QuyDinhService : BaseApiService
     {
-        // BaseAddress đã là ".../api/" nên endpoint chỉ cần phần đuôi "quydinh".
-        private const string Endpoint = "quydinh";
+        public QuyDinhService() : base()
+        {
+            // Tái sử dụng HttpClient cấu hình sẵn từ lớp cha BaseApiService
+        }
+
+        // ==========================================
+        // 1. THAM SỐ & QUY ĐỊNH HỆ THỐNG (QĐ1 / QĐ4 / THỐNG KÊ QĐ2)
+        // ==========================================
 
         /// <summary>
-        /// Lấy bộ quy định hiện tại từ Server để đổ lên form (GET api/quydinh).
-        /// Dùng khi mở màn hình "Cập nhật quy định" để hiển thị giá trị đang áp dụng.
+        /// GET: api/quydinh
+        /// Lấy tham số hệ thống kèm theo số lượng thống kê các danh mục
         /// </summary>
-        public async Task<ThamSoDto> GetThamSoAsync()
+        public async Task<ThamSoDto?> GetThamSoAsync()
         {
-            return await GetAsync<ThamSoDto>(Endpoint);
+            try
+            {
+                return await GetAsync<ThamSoDto>("quydinh");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi GetThamSo: {ex.Message}");
+                return null;
+            }
         }
 
         /// <summary>
-        /// Gửi dữ liệu CẬP NHẬT quy định lên Server bằng phương thức PUT (PUT api/quydinh).
-        /// Đây là hàm xử lý cho sự kiện bấm nút "Cập nhật" trên màn hình UpdateRegulations.
-        /// Trả về bộ quy định mới nhất sau khi Server đã lưu vào CSDL.
+        /// PUT: api/quydinh
+        /// Cập nhật số bệnh nhân tối đa trong ngày và tiền khám cố định
         /// </summary>
-        public async Task<ThamSoDto> CapNhatQuyDinhAsync(UpdateThamSoRequest request)
+        public async Task<ThamSoDto?> UpdateThamSoAsync(UpdateThamSoRequest request)
         {
-            return await PutAsync<UpdateThamSoRequest, ThamSoDto>(Endpoint, request);
+            try
+            {
+                return await PutAsync<UpdateThamSoRequest, ThamSoDto>("quydinh", request);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi UpdateThamSo: {ex.Message}");
+                return null;
+            }
+        }
+
+        // ==========================================
+        // 2. DANH MỤC LOẠI BỆNH (QĐ2)
+        // ==========================================
+
+        /// <summary>
+        /// POST: api/quydinh/loaibenh
+        /// </summary>
+        public async Task<LoaiBenhDto?> AddLoaiBenhAsync(UpsertLoaiBenhRequest request)
+        {
+            try
+            {
+                return await PostAsync<UpsertLoaiBenhRequest, LoaiBenhDto>("quydinh/loaibenh", request);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi AddLoaiBenh: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// PUT: api/quydinh/loaibenh/{id}
+        /// </summary>
+        public async Task<LoaiBenhDto?> UpdateLoaiBenhAsync(int id, UpsertLoaiBenhRequest request)
+        {
+            try
+            {
+                return await PutAsync<UpsertLoaiBenhRequest, LoaiBenhDto>($"quydinh/loaibenh/{id}", request);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi UpdateLoaiBenh: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// DELETE: api/quydinh/loaibenh/{id}
+        /// </summary>
+        public async Task<MessageResponse?> DeleteLoaiBenhAsync(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"quydinh/loaibenh/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    // Đọc chuỗi json trả về map thành object MessageResponse ("Đã xóa loại bệnh.")
+                    return await response.Content.ReadFromJsonAsync<MessageResponse>();
+                }
+                return new MessageResponse("Xóa loại bệnh thất bại.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteLoaiBenh: {ex.Message}");
+                return new MessageResponse($"Lỗi kết nối: {ex.Message}");
+            }
+        }
+
+        // ==========================================
+        // 3. DANH MỤC THUỐC (QĐ2 / QĐ4)
+        // ==========================================
+
+        /// <summary>
+        /// POST: api/quydinh/thuoc
+        /// </summary>
+        public async Task<ThuocDto?> AddThuocAsync(UpsertThuocRequest request)
+        {
+            try
+            {
+                return await PostAsync<UpsertThuocRequest, ThuocDto>("quydinh/thuoc", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi AddThuoc: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// PUT: api/quydinh/thuoc/{id}
+        /// </summary>
+        public async Task<ThuocDto?> UpdateThuocAsync(int id, UpsertThuocRequest request)
+        {
+            try
+            {
+                return await PutAsync<UpsertThuocRequest, ThuocDto>($"quydinh/thuoc/{id}", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi UpdateThuoc: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// DELETE: api/quydinh/thuoc/{id}
+        /// </summary>
+        public async Task<MessageResponse?> DeleteThuocAsync(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"quydinh/thuoc/{id}");
+                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
+                return new MessageResponse("Xóa thuốc thất bại.");
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteThuoc: {ex.Message}"); return new MessageResponse(ex.Message); }
+        }
+
+        // ==========================================
+        // 4. DANH MỤC ĐƠN VỊ TÍNH (QĐ2)
+        // ==========================================
+
+        /// <summary>
+        /// POST: api/quydinh/donvi
+        /// </summary>
+        public async Task<DonViDto?> AddDonViAsync(UpsertDonViRequest request)
+        {
+            try
+            {
+                return await PostAsync<UpsertDonViRequest, DonViDto>("quydinh/donvi", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi AddDonVi: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// PUT: api/quydinh/donvi/{id}
+        /// </summary>
+        public async Task<DonViDto?> UpdateDonViAsync(int id, UpsertDonViRequest request)
+        {
+            try
+            {
+                return await PutAsync<UpsertDonViRequest, DonViDto>($"quydinh/donvi/{id}", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi UpdateDonVi: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// DELETE: api/quydinh/donvi/{id}
+        /// </summary>
+        public async Task<MessageResponse?> DeleteDonViAsync(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"quydinh/donvi/{id}");
+                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
+                return new MessageResponse("Xóa đơn vị tính thất bại.");
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteDonVi: {ex.Message}"); return new MessageResponse(ex.Message); }
+        }
+
+        // ==========================================
+        // 5. DANH MỤC CÁCH DÙNG (QĐ2)
+        // ==========================================
+
+        /// <summary>
+        /// POST: api/quydinh/cachdung
+        /// </summary>
+        public async Task<CachDungDto?> AddCachDungAsync(UpsertCachDungRequest request)
+        {
+            try
+            {
+                return await PostAsync<UpsertCachDungRequest, CachDungDto>("quydinh/cachdung", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi AddCachDung: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// PUT: api/quydinh/cachdung/{id}
+        /// </summary>
+        public async Task<CachDungDto?> UpdateCachDungAsync(int id, UpsertCachDungRequest request)
+        {
+            try
+            {
+                return await PutAsync<UpsertCachDungRequest, CachDungDto>($"quydinh/cachdung/{id}", request);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi UpdateCachDung: {ex.Message}"); return null; }
+        }
+
+        /// <summary>
+        /// DELETE: api/quydinh/cachdung/{id}
+        /// </summary>
+        public async Task<MessageResponse?> DeleteCachDungAsync(int id)
+        {
+            try
+            {
+                var response = await Client.DeleteAsync($"quydinh/cachdung/{id}");
+                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
+                return new MessageResponse("Xóa cách dùng thất bại.");
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteCachDung: {ex.Message}"); return new MessageResponse(ex.Message); }
         }
     }
 }

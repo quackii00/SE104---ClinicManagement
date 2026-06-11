@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:ClinicManagement.UI.ViewModels" 
         xmlns:exam="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
         xmlns:patient="clr-namespace:ClinicManagement.UI.Views.UI.Patient"
+        xmlns:report="clr-namespace:ClinicManagement.UI.Views.UI.Report"
         Title="Clinic Management"
         Height="700"
         Width="1000"
@@ -27,9 +28,28 @@
         <DataTemplate DataType="{x:Type vm:PrescriptionViewModel}">
             <patient:PrescriptionView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MedicalRecordViewModel}">
+            <patient:MedicalRecord />
+        </DataTemplate>
 
         <DataTemplate DataType="{x:Type vm:RecievePatientViewModel}">
             <patient:RecievePatient />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:PatientLookupViewModel}">
+            <exam:PatientLookupView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:MedicalHistoryViewModel}">
+            <exam:MedicalHistoryView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:InvoiceViewModel}">
+            <exam:InvoiceView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ReportViewModel}">
+            <report:ReportView />
         </DataTemplate>
     </Window.Resources>
 
@@ -37,15 +57,18 @@
         <Border BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="15"
+                ClipToBounds="True"
                 Background="{StaticResource CardBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <components:Sidebar Grid.Column="0" 
-                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                    Width="180"
+                                    VerticalAlignment="Stretch"
+                                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
                 <ContentControl x:Name="MainContent"
                                 Grid.Column="1"

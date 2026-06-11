@@ -3,78 +3,104 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Report"
              xmlns:views="clr-namespace:ClinicManagement.UI.Views.UI.Report"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="800">
     <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
 
-            <TabControl>
+            <TabControl Margin="10" 
+                        Background="Transparent" 
+                        BorderThickness="0">
+                <TabControl.Resources>
 
-            <TabControl.Resources>
+                    <Style TargetType="TabControl">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabControl">
+                                    <Grid KeyboardNavigation.TabNavigation="Local">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
 
-                <Style TargetType="TabItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="TabItem">
+                                        <TabPanel x:Name="HeaderPanel"
+                                          Grid.Row="0"
+                                          Panel.ZIndex="1"
+                                          Margin="15,10,15,5"
+                                          IsItemsHost="True"
+                                          KeyboardNavigation.TabIndex="1"/>     
 
-                                <Border x:Name="Bd"
-                                Background="White"
-                                BorderBrush="#666"
-                                BorderThickness="1"
-                                CornerRadius="12"
-                                Padding="20,8">
+                                        <Border x:Name="ContentPanel" 
+                                                Grid.Row="1" 
+                                                Background="{TemplateBinding Background}" 
+                                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                                KeyboardNavigation.TabIndex="2" 
+                                                KeyboardNavigation.TabNavigation="Local" 
+                                                KeyboardNavigation.DirectionalNavigation="Contained">
+                                            <ContentPresenter x:Name="PART_SelectedContentHost" 
+                                                              ContentSource="SelectedContent" 
+                                                              Margin="0,15,0,0"/>
+                                        </Border>
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
 
-                                    <ContentPresenter
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                ContentSource="Header"/>
+                    <Style TargetType="TabItem">
+                        <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="FontWeight" Value="Medium"/>
+                        <Setter Property="Foreground" Value="#555555"/>
+                        <Setter Property="Margin" Value="0,0,0,0"/>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Grid SnapsToDevicePixels="True">
+                                        <Border x:Name="Bd"
+                                                Background="#F5F5F5"
+                                                BorderBrush="{StaticResource BorderBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="8"
+                                                Padding="15,10">
+                                            <ContentPresenter x:Name="ContentSite"
+                                                              ContentSource="Header"
+                                                              RecognizesAccessKey="True"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"/>
+                                        </Border>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource LightBlueBrush}"/>
+                                            <Setter TargetName="Bd" Property="BorderBrush" Value="#007ACC"/>
+                                            <Setter Property="Foreground" Value="#007ACC"/>
+                                            <Setter Property="FontWeight" Value="SemiBold"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#EAEAEA"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
 
-                                </Border>
+                <TabItem Header="Báo cáo tháng" Height="40">
+                    <views:MonthlyReportView DataContext="{Binding}"/>
+                </TabItem>
 
-                                <ControlTemplate.Triggers>
+                <TabItem Header="Báo cáo sử dụng thuốc" Height="40">
+                    <views:MedicineUsageReportView DataContext="{Binding}"/>
+                </TabItem>
 
-                                    <Trigger Property="IsSelected"
-                                     Value="True">
-
-                                        <Setter TargetName="Bd"
-                                        Property="Background"
-                                        Value="{StaticResource LightBlueBrush}"/>
-
-                                        <Setter TargetName="Bd"
-                                        Property="BorderThickness"
-                                        Value="1,1,1,0"/>
-
-                                    </Trigger>
-
-                                </ControlTemplate.Triggers>
-
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-
-            </TabControl.Resources>
-
-            <!-- Tab 1 -->
-            <TabItem Header="Báo cáo tháng" Height="40" Width="150" >
-
-                <views:MonthlyReportView/>
-
-            </TabItem>
-
-            <!-- Tab 2 -->
-            <TabItem Header="Báo cáo sử dụng thuốc"  Height="40" Width="200">
-
-                <views:MedicineUsageReportView/>
-
-            </TabItem>
-
-        </TabControl>
+            </TabControl>
         </Border>
     </Grid>
 </UserControl>

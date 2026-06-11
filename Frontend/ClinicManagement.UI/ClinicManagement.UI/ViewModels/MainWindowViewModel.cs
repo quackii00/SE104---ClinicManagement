@@ -1,27 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Collections.Generic;
 using ClinicManagement.UI.Services;
-using ClinicManagement.UI.Models;   // Gọi bộ Model của bạn
-using ClinicManagement.UI.DTOs;     // Gọi DTO tổng hợp mới
-
-// Khai báo chính xác các namespace của hệ thống
-using ClinicManagement.UI.Views.UI.Dashboard;
-using ClinicManagement.UI.Views.UI.Examination;
-using ClinicManagement.UI.Views.UI.Patient;
-using ClinicManagement.UI.Views.UI.Report;
-using ClinicManagement.UI.Views.UI.Update;
+using ClinicManagement.UI.Models;
+using ClinicManagement.UI.DTOs;
+using ClinicManagement.UI.ViewModels;
 
 namespace ClinicManagement.UI.ViewModels
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        private readonly DanhSachKhamService _danhSachKhamService; // Khai báo service mạng
-
+        private readonly DanhSachKhamService _danhSachKhamService;
         private string _userRole;
         private string _userName;
         private object _currentView;
@@ -39,89 +32,61 @@ namespace ClinicManagement.UI.ViewModels
 
         public MainWindowViewModel()
         {
-            // Khởi tạo lớp dịch vụ mạng kết nối Backend
             _danhSachKhamService = new DanhSachKhamService();
-
-            UserRole = AppState.Instance.CurrentUserRole ?? "Admin";
-            UserName = AppState.Instance.CurrentUserName ?? "Ngọc Huyền";
+            UserRole = AppState.Instance.CurrentUserRole;
+            UserName = AppState.Instance.CurrentUserName;
 
             NavigationCommand = new RelayCommand(p => Navigate(p?.ToString()));
-            LogoutCommand = new RelayCommand(Logout);
+            LogoutCommand = new RelayCommand(p => Logout());
 
-            // KHỞI ĐỘNG LUỒNG: Gọi nạp dữ liệu thô từ Server ngầm ngay khi MainWindow vừa lên hình
+            CurrentView = new DashboardViewModel();
             _ = InitializeApplicationDataAsync();
         }
 
-        /// <summary>
-        /// Hàm điều phối nạp dữ liệu từ Backend trước rồi mới mở Dashboard sau
-        /// </summary>
         private async Task InitializeApplicationDataAsync()
         {
             await LoadAllDailyDataFromServerAsync();
-            Navigate("Dashboard"); // Nạp xong xuôi mới mở Dashboard
+            Navigate("Dashboard");
         }
 
-        /// <summary>
-        /// Gọi API nhận dữ liệu đầu ngày từ Server nạp vào "két sắt" AppState
-        /// </summary>
         private async Task LoadAllDailyDataFromServerAsync()
         {
             try
             {
                 IsDataLoaded = false;
-
-                // ĐÃ SỬA: Hứng gói dữ liệu DTO tổng hợp của ngày hôm nay từ Server
                 var responseData = await _danhSachKhamService.GetTodayPatientsAsync();
 
-                // Tạo đối tượng thực thể DanhSachKhamBenh theo đúng Model của bạn
                 var danhSachModel = new DanhSachKhamBenh
                 {
                     NgayKham = responseData?.NgayKham ?? DateTime.Today,
                     ChiTietDanhSach = new List<ChiTietDanhSachKham>()
                 };
 
-                if (responseData != null && responseData.ChiTietDanhSach != null)
+                if (responseData?.ChiTietDanhSach != null)
                 {
-                    // Lặp qua mảng con ChiTietDanhSach của gói tổng hợp để đổ vào Model
                     foreach (var item in responseData.ChiTietDanhSach)
                     {
                         danhSachModel.ChiTietDanhSach.Add(new ChiTietDanhSachKham
                         {
                             STT = item.STT,
                             TrangThai = item.TrangThai,
-                            BenhNhan = new BenhNhan
-                            {
-                                MaBenhNhan = item.MaBenhNhan,
-                                HoTen = item.HoTen,
-                                GioiTinh = item.GioiTinh,
-                                NamSinh = item.NamSinh,
-                                DiaChi = item.DiaChi
-                            }
+                            MaPhieuKham = item.MaPhieuKham,
+                            BenhNhan = new BenhNhan { MaBenhNhan = item.MaBenhNhan, HoTen = item.HoTen, GioiTinh = item.GioiTinh, NamSinh = item.NamSinh, DiaChi = item.DiaChi }
                         });
                     }
-
-                    // Đổ dữ liệu cấu hình quy định 1 và tổng doanh thu thực tế đầu ngày từ Server vào AppState
                     AppState.Instance.SoLuongToiDaHeThong = responseData.SoBenhNhanToiDaNgay;
                     AppState.Instance.TongDoanhThuTrongNgay = responseData.TongDoanhThuNgay;
                 }
-
-                // CẤT VÀO KHO DÙNG CHUNG để các màn hình dùng chung vùng nhớ trên RAM Client
                 AppState.Instance.DanhSachKhamHienTai = danhSachModel;
-
                 IsDataLoaded = true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Lỗi nạp dữ liệu đầu ngày: {ex.Message}");
-                // Phòng hờ sập mạng hoặc không có kết nối: Khởi tạo danh sách rỗng để app không crash
-                AppState.Instance.DanhSachKhamHienTai = new DanhSachKhamBenh { NgayKham = DateTime.Today, ChiTietDanhSach = new List<ChiTietDanhSachKham>() };
+                System.Diagnostics.Debug.WriteLine($"Lỗi nạp dữ liệu: {ex.Message}");
             }
         }
 
-        /// <summary>
-        /// Hàm điều hướng tập trung xử lý chuyển đổi giao diện dựa trên cơ chế ViewModel-First
-        /// </summary>
-        public void Navigate(string targetView)
+        public void Navigate(string targetView, object parameter = null)
         {
             if (string.IsNullOrEmpty(targetView)) return;
 
@@ -130,60 +95,56 @@ namespace ClinicManagement.UI.ViewModels
                 case "Dashboard":
                     CurrentView = new DashboardViewModel();
                     break;
-
                 case "PatientList":
-                    // ĐÃ SỬA: Truyền chính nó (this) vào để PatientListViewModel có thể gọi lệnh lật trang
                     CurrentView = new PatientListViewModel(this);
                     break;
-
                 case "PatientLookup":
-                    CurrentView = new PatientLookupView();
+                    CurrentView = new PatientLookupViewModel(this);
                     break;
-
                 case "Invoice":
-                    CurrentView = new InvoiceView();
+                    if (parameter is ChiTietDanhSachKham patientContext)
+                        CurrentView = new InvoiceViewModel(this, patientContext);
+                    else
+                        CurrentView = new PatientListViewModel(this);
                     break;
-
+                case "MedicalRecord":
+                    if (parameter is MedicalRecordViewModel mrvm)
+                        CurrentView = mrvm;
+                    break;
+                // BẠN THIẾU ĐOẠN NÀY NÊN NÓ MỚI NHẢY VỀ DASHBOARD:
                 case "Report":
-                    CurrentView = new ReportView();
+                    CurrentView = new ReportViewModel(); // Hoặc ViewModel báo cáo của bạn
                     break;
-
-                case "Update":
-                    CurrentView = new UpdateRegulations();
-                    break;
-
+                
                 default:
                     CurrentView = new DashboardViewModel();
                     break;
             }
         }
-
-        private void Logout(object parameter)
+        private void Logout()
         {
+            // 1. Xóa sạch dữ liệu phiên
+            new TokenStorageService().ClearToken();
             AppState.Instance.Reset();
-            Window activeMainWindow = null;
 
-            foreach (Window window in Application.Current.Windows)
-            {
-                if (window.GetType().FullName == "ClinicManagement.UI.MainWindow" && window.IsVisible)
-                {
-                    activeMainWindow = window;
-                    break;
-                }
-            }
+            // 2. Tạo cửa sổ đăng nhập mới
+            var loginWindow = new LoginWindow();
 
-            LoginWindow loginWindow = new LoginWindow();
+            // 3. Đặt nó làm cửa sổ chính của ứng dụng trước khi đóng màn hình cũ
+            Application.Current.MainWindow = loginWindow;
             loginWindow.Show();
 
-            if (activeMainWindow != null)
+            // 4. Đóng cửa sổ hiện tại (MainWindow)
+            foreach (Window window in Application.Current.Windows)
             {
-                activeMainWindow.Close();
+                if (window != loginWindow)
+                {
+                    window.Close();
+                }
             }
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
-        {
+        protected void OnPropertyChanged([CallerMemberName] string name = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
     }
 }

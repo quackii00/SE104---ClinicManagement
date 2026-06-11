@@ -5,94 +5,144 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Examination"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="900">
     <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="15" 
+                Background="{StaticResource CardBrush}">
 
             <Grid Margin="20">
-
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="240"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Search Area -->
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" VerticalAlignment="Top" Margin="0,0,10,0">
 
                     <TextBlock Text="Tra cứu bệnh nhân"
-                           FontSize="20"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,30"/>
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"
+                               Margin="0,10,0,30"/>
 
-                    <TextBlock Text="Họ tên"/>
-                    <TextBox Height="35"/>
+                    <TextBlock Text="Họ tên" Opacity="0.8" Margin="0,0,0,4"/>
+                    <TextBox Height="35" 
+                             VerticalContentAlignment="Center" 
+                             Padding="8,0"
+                             Text="{Binding HoTenSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <TextBlock Text="Số điện thoại"
-                           Margin="0,10,0,0"/>
-                    <TextBox Height="35"/>
+                    <TextBlock Text="Năm sinh" Margin="0,15,0,4" Opacity="0.8"/>
+                    <TextBox Height="35" 
+                             VerticalContentAlignment="Center" 
+                             Padding="8,0"
+                             Text="{Binding NamSinhSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <TextBlock Text="Loại bệnh"
-                           Margin="0,10,0,0"/>
-                    <ComboBox Height="35"/>
-
-                    <TextBlock Text="Giới tính"
-                           Margin="0,10,0,0"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <RadioButton Content="Nam"/>
-                        <RadioButton Content="Nữ"
-                                 Margin="20,0,0,0"/>
+                    <TextBlock Text="Giới tính" Margin="0,15,0,6" Opacity="0.8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                        <RadioButton Content="Nam" IsChecked="{Binding IsNam, Mode=TwoWay}"/>
+                        <RadioButton Content="Nữ" IsChecked="{Binding IsNu, Mode=TwoWay}" Margin="30,0,0,0"/>
                     </StackPanel>
 
-                    <TextBlock Text="Ngày khám"
-                           Margin="0,10,0,0"/>
-                    <DatePicker Height="35"/>
+                    <TextBlock Text="Ngày khám" Margin="0,15,0,4" Opacity="0.8"/>
+                    <DatePicker Height="35" 
+                                SelectedDate="{Binding NgayKhamSearch, Mode=TwoWay}"/>
 
                     <Button Content="Tìm kiếm"
-                        Width="120"
-                        Height="40"
-                        Margin="0,30,0,0"
-                        HorizontalAlignment="Center"
-                        Background="{StaticResource PrimaryButtonBrush}"/>
+                            Width="120"
+                            Height="40"
+                            Margin="0,30,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource PrimaryButton}"
+                            Command="{Binding TimKiemCommand}"/>
 
                 </StackPanel>
 
-                <!-- Result -->
-                <Border Grid.Column="1"
-                    Margin="30,30,0,0"
-                    Background="{StaticResource LightBlueBrush}"
-                    CornerRadius="15">
+                <Grid Grid.Column="1" Margin="20,0,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <ListBox ItemsSource="{Binding Patients}"
-                         Margin="15">
+                    <Border Grid.Row="0" 
+                            Background="#D0E7FF" 
+                            CornerRadius="8,8,0,0" 
+                            Padding="20,14,35,14">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="2.0*"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="1.4*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="2.5*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
+                            <TextBlock Grid.Column="0" Text="STT" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="2" Text="Năm Sinh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="3" Text="Ngày Khám" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="4" Text="Loại Bệnh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                            <TextBlock Grid.Column="5" Text="Triệu Chứng" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,10,0"/>
+                        </Grid>
+                    </Border>
 
-                                <Border Height="40"
-                                    Margin="0,5"
-                                    Background="White"
-                                    CornerRadius="5">
+                    <Border Grid.Row="1" 
+                            Background="#E6F2FF" 
+                            CornerRadius="0,0,15,15">
 
-                                    <TextBlock Text="{Binding FullName}"
-                                           VerticalAlignment="Center"
-                                           Margin="10,0"/>
+                        <ListBox ItemsSource="{Binding Patients}"
+                                 SelectedItem="{Binding SelectedPatientItem}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 HorizontalContentAlignment="Stretch" 
+                                 Margin="10,5">
 
-                                </Border>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="White"
+                                            CornerRadius="6"
+                                            Margin="0,4"
+                                            Padding="20,12"
+                                            HorizontalAlignment="Stretch">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="2.0*"/>
+                                                <ColumnDefinition Width="1.1*"/>
+                                                <ColumnDefinition Width="1.4*"/>
+                                                <ColumnDefinition Width="1.5*"/>
+                                                <ColumnDefinition Width="2.5*"/>
+                                            </Grid.ColumnDefinitions>
 
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
+                                            <TextBlock Grid.Column="0" Text="{Binding STT}" VerticalAlignment="Center" Opacity="0.7"/>
 
-                    </ListBox>
+                                            <TextBlock Grid.Column="1" Text="{Binding HoTen}" VerticalAlignment="Center" FontSize="13.5" FontWeight="Medium" Foreground="#111111" Margin="0,0,15,0" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
 
-                </Border>
+                                            <TextBlock Grid.Column="2" Text="{Binding NamSinh}" VerticalAlignment="Center" Opacity="0.8" Margin="0,0,10,0"/>
+
+                                            <TextBlock Grid.Column="3" Text="{Binding NgayKham, StringFormat=\{0:dd/MM/yyyy\}}" VerticalAlignment="Center" Opacity="0.8" Margin="0,0,10,0"/>
+
+                                            <TextBlock Grid.Column="4" Text="{Binding TenLoaiBenh}" VerticalAlignment="Center" Opacity="0.8" Margin="0,0,15,0" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+
+                                            <TextBlock Grid.Column="5" 
+                                                       Text="{Binding TrieuChung}" 
+                                                       VerticalAlignment="Center" 
+                                                       TextWrapping="Wrap" 
+                                                       FontSize="13"
+                                                       Opacity="0.7"
+                                                       Margin="0,0,5,0"
+                                                       HorizontalAlignment="Left"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+                    </Border>
+                </Grid>
 
             </Grid>
-
         </Border>
-
     </Grid>
 </UserControl>
