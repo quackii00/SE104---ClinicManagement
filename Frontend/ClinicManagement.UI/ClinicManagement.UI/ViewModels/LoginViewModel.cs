@@ -6,12 +6,15 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ClinicManagement.UI.DTOs;
 using ClinicManagement.UI.Services;
 
 namespace ClinicManagement.UI.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
+        private readonly AuthService _authService = new AuthService();
+
         private string _email;
         private string _password;
         private string _selectedRole;
@@ -183,22 +186,33 @@ namespace ClinicManagement.UI.ViewModels
         private async Task SignInAsync()
         {
             IsLoading = true;
+            ErrorMessage = string.Empty;
 
             try
             {
-                // Giả lập delay loading (2 giây)
-                await Task.Delay(2000);
+                // Gọi API đăng nhập THẬT để lấy JWT (POST api/auth/login)
+                var result = await _authService.LoginAsync(new LoginRequest
+                {
+                    Email = Email,
+                    Password = Password
+                });
 
-                // TODO: Implement authentication logic here
-                // This is where you would call your authentication service
+                // Server trả 401 => sai thông tin đăng nhập
+                if (result == null)
+                {
+                    ErrorMessage = "Email hoặc mật khẩu không đúng.";
+                    return;
+                }
 
-                System.Diagnostics.Debug.WriteLine($"Attempting login with Email: {Email}, Role: {SelectedRole}");
-
-                // Lưu thông tin đăng nhập vào AppState
+                // Lưu JWT + thông tin người dùng vào kho dùng chung (AppState).
+                // Từ đây BaseApiService sẽ tự đính kèm Bearer token cho mọi request về sau.
+                AppState.Instance.AuthToken = result.Token;
                 AppState.Instance.CurrentUserEmail = Email;
-                AppState.Instance.CurrentUserRole = SelectedRole;
+                AppState.Instance.CurrentUserName =
+                    string.IsNullOrWhiteSpace(result.HoTen) ? result.TenDangNhap : result.HoTen;
+                AppState.Instance.CurrentUserRole = result.VaiTro; // tên hiển thị tiếng Việt (vd "Bác Sĩ")
 
-                // Lưu email và role để hiển thị lại lần tới
+                // Lưu email để gợi ý lại lần đăng nhập sau
                 AppState.Instance.SaveLastUsed();
 
                 // Đăng nhập thành công - mở MainWindow và đóng LoginWindow
@@ -217,7 +231,9 @@ namespace ClinicManagement.UI.ViewModels
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Login failed: {ex.Message}";
+                // Lỗi mạng / Backend chưa chạy / sai chứng chỉ HTTPS...
+                ErrorMessage = "Không kết nối được máy chủ. Hãy kiểm tra Backend đang chạy rồi thử lại.";
+                System.Diagnostics.Debug.WriteLine($"[Login Error]: {ex}");
             }
             finally
             {

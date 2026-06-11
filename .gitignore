@@ -24,6 +24,13 @@ Backend/publish/
 bin/
 obj/
 
+# App configuration theo môi trường – KHÔNG commit (chứa URL/secret tùy môi trường).
+# Dùng appsettings.example.json làm mẫu; mỗi máy copy thành appsettings.json rồi tự điền.
+**/appsettings.json
+!**/appsettings.example.json
+*.env
+.env
+
 # OS generated files
 Thumbs.db
 Desktop.ini

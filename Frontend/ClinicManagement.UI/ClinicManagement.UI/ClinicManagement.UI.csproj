@@ -14,8 +14,17 @@
     <Folder Include="Resources\" />
   </ItemGroup>
 
+  <!-- File cấu hình môi trường: copy ra thư mục chạy để app đọc lúc runtime.
+       appsettings.json bị .gitignore (chứa URL theo môi trường), appsettings.example.json là mẫu để commit. -->
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="appsettings.example.json" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>

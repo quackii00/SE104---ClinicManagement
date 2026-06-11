@@ -12,14 +12,13 @@ namespace ClinicManagement.UI.Services
     /// </summary>
     public class BaseApiService
     {
-        // Khởi tạo một HttpClient độc nhất (static) để dùng xuyên suốt chu kỳ chạy app
+        // Khởi tạo một HttpClient độc nhất (static) để dùng xuyên suốt chu kỳ chạy app.
+        // URL gốc KHÔNG hard-code ở đây mà đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
         protected static readonly HttpClient Client = new HttpClient
         {
-            // Đường dẫn gốc của API Backend.
-            // Cổng HTTPS local của Backend (xem Properties/launchSettings.json) là 7089.
-            // Khi deploy hãy đổi sang URL công khai (Render) của nhóm.
-            BaseAddress = new Uri("https://localhost:7089/api/"),
-            Timeout = TimeSpan.FromSeconds(30) // Quá 30 giây không phản hồi thì ngắt kết nối
+            BaseAddress = new Uri(AppConfig.ApiBaseUrl),
+            // Render gói free "ngủ" khi không dùng -> request đầu tiên có thể chờ vài chục giây để server thức dậy.
+            Timeout = TimeSpan.FromSeconds(60)
         };
 
         /// <summary>
