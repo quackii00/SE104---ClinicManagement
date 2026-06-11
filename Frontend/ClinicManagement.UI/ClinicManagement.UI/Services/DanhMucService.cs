@@ -5,9 +5,15 @@ using ClinicManagement.UI.DTOs;
 
 namespace ClinicManagement.UI.Services
 {
+    /// <summary>
+    /// Service công khai dùng chung để các vai trò (Bác sĩ, Tiếp tân, Kế toán, Admin) 
+    /// có thể GET lấy danh sách dữ liệu hiển thị lên ComboBox/ListView.
+    /// </summary>
     public class DanhMucService : BaseApiService
     {
         public DanhMucService() : base() { }
+
+        // ==================== GET METHODS (api/danhmuc/...) ====================
 
         /// <summary>
         /// GET: api/danhmuc/loaibenh
@@ -38,6 +44,22 @@ namespace ClinicManagement.UI.Services
             {
                 System.Diagnostics.Debug.WriteLine($"[DanhMucService] Lỗi GetThuoc: {ex.Message}");
                 return new List<ThuocDto>();
+            }
+        }
+
+        /// <summary>
+        /// 🌟 BỔ SUNG ĐỂ SỬA LỖI COMPILE: GET: api/danhmuc/donvi
+        /// </summary>
+        public async Task<List<DonViDto>> GetDonViAsync()
+        {
+            try
+            {
+                return await GetAsync<List<DonViDto>>("danhmuc/donvi") ?? new List<DonViDto>();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DanhMucService] Lỗi GetDonVi: {ex.Message}");
+                return new List<DonViDto>();
             }
         }
 

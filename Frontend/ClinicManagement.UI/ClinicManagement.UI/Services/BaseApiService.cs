@@ -103,5 +103,27 @@ namespace ClinicManagement.UI.Services
                 return default;
             }
         }
+        protected async Task<bool> DeleteAsync(string endpoint)
+        {
+            try
+            {
+                PrepareAuthHeader();
+                var response = await Client.DeleteAsync(endpoint);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+
+                var errorContent = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] DELETE Lỗi Server tại {endpoint}: {errorContent}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối DELETE: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

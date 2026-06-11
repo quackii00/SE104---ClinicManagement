@@ -42,7 +42,7 @@ namespace ClinicManagement.UI.DTOs
     public class ThuocDto
     {
         public int Id { get; set; }
-        public string MaThuoc { get; set; } = string.Empty;
+        public string MaThuoc { get; set; }
         public string TenThuoc { get; set; } = string.Empty;
         public decimal DonGia { get; set; }
         public string MaDonVi { get; set; } = string.Empty;

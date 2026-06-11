@@ -111,7 +111,9 @@ namespace ClinicManagement.UI.ViewModels
                     if (parameter is MedicalRecordViewModel mrvm)
                         CurrentView = mrvm;
                     break;
-                // BẠN THIẾU ĐOẠN NÀY NÊN NÓ MỚI NHẢY VỀ DASHBOARD:
+                case "Update":
+                    CurrentView = new UpdateRegulationsViewModel();
+                    break;
                 case "Report":
                     CurrentView = new ReportViewModel(); // Hoặc ViewModel báo cáo của bạn
                     break;

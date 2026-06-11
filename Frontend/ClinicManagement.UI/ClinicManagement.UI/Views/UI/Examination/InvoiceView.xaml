@@ -157,7 +157,7 @@
 
                                 <DataGridTextColumn Header="Đơn giá"
                                                     Width="150"
-                                                    Binding="{Binding ThanhTien, StringFormat=\{0:N0\} VNĐ}">
+                                                    Binding="{Binding DonGia, StringFormat=\{0:N0\} VNĐ}">
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Right"/>

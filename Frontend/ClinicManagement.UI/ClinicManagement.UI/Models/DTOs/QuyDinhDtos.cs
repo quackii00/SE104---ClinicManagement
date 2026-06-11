@@ -24,6 +24,11 @@ namespace ClinicManagement.UI.DTOs
     {
         public int SoBenhNhanToiDaNgay { get; set; }
         public decimal TienKham { get; set; }
+
+        // Bổ sung thêm 3 danh sách này để nhận dữ liệu từ WPF gửi lên
+        public List<string> DanhSachLoaiBenh { get; set; } = new();
+        public List<string> DanhSachLoaiThuoc { get; set; } = new();
+        public List<string> DanhSachCachDung { get; set; } = new();
     }
 
     /// <summary>

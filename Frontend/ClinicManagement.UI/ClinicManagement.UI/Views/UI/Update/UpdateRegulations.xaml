@@ -3,236 +3,251 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Update"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="800">
+             d:DesignHeight="1600" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
     <Grid>
         <Border BorderBrush="{StaticResource BorderBrush}" 
                 BorderThickness="1" 
                 CornerRadius="15" 
-                Background="{StaticResource CardBrush}">
+                Background="{StaticResource CardBrush}"
+                Margin="15">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="35">
 
-                <StackPanel Margin="40">
+                    <TextBlock Text="THAY ĐỔI QUY ĐỊNH HỆ THỐNG"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,30"
+                               Foreground="{StaticResource PrimaryTextBrush}"/>
 
-                    <!-- Title -->
-                    <TextBlock Text="Cập nhật quy định"
-                           FontSize="24"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,30"/>
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="CẤU HÌNH THAM SỐ CHÍNH" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}" Margin="0,0,0,15"/>
+                            <UniformGrid Columns="2">
+                                <StackPanel Margin="0,0,15,0">
+                                    <TextBlock Text="Số bệnh nhân tối đa / ngày (QĐ1)" FontSize="13" FontWeight="Medium" Margin="0,0,0,8"/>
+                                    <TextBox Height="38" VerticalContentAlignment="Center" Padding="10,0"
+                                             Text="{Binding SoBenhNhanToiDaText, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
 
-                    <!-- Số bệnh nhân -->
-                    <StackPanel Margin="0,0,0,20">
-                        <TextBlock Text="Số bệnh nhân tối đa / ngày"
-                               FontSize="14"/>
+                                <StackPanel Margin="15,0,0,0">
+                                    <TextBlock Text="Tiền khám bệnh - VNĐ (QĐ4)" FontSize="13" FontWeight="Medium" Margin="0,0,0,8"/>
+                                    <TextBox Height="38" VerticalContentAlignment="Center" Padding="10,0"
+                                             Text="{Binding TienKhamText, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
 
-                        <TextBox Width="220"
-                             Height="35"
-                             Margin="0,5,0,0"
-                             Text="{Binding SoBenhNhanToiDaText, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="QUY ĐỊNH LOẠI BỆNH (QĐ2)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                                    <TextBlock Text=" - Số lượng: " FontSize="13" Opacity="0.7" Margin="5,0,0,0"/>
+                                    <TextBlock Text="{Binding SoLoaiBenh}" FontSize="13" FontWeight="Bold" Foreground="#3182CE"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Height="36" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,10,0" Tag="Nhập tên loại bệnh mới..."
+                                         Text="{Binding NewDiseaseText, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Grid.Column="1" Content="+ Thêm loại bệnh" Width="150" Height="36" Background="Transparent" Foreground="Green" BorderBrush="Green" BorderThickness="1" Cursor="Hand"
+                                        Command="{Binding AddDiseaseCommand}"/>
+                            </Grid>
+                            <ListBox Height="130" ItemsSource="{Binding DiseaseTypes}" HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="5,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding TenLoaiBenh, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" FontSize="13"/>
+                                            <Button Grid.Column="1" Content="✕" Width="22" Height="22" Background="Transparent" BorderThickness="0" Foreground="Red" Cursor="Hand"
+                                                    Command="{Binding DataContext.RemoveDiseaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
 
-                    <Separator Margin="0,0,0,15"/>
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="QUY ĐỊNH ĐƠN VỊ TÍNH (QĐ2)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                                    <TextBlock Text=" - Số lượng: " FontSize="13" Opacity="0.7" Margin="5,0,0,0"/>
+                                    <TextBlock Text="{Binding SoDonVi}" FontSize="13" FontWeight="Bold" Foreground="#3182CE"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Height="36" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,10,0" Tag="Nhập đơn vị tính mới (Ví dụ: Viên, Chai)..."
+                                         Text="{Binding NewUnitText, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Grid.Column="1" Content="+ Thêm đơn vị" Width="150" Height="36" Background="Transparent" Foreground="Green" BorderBrush="Green" BorderThickness="1" Cursor="Hand"
+                                        Command="{Binding AddUnitCommand}"/>
+                            </Grid>
+                            <ListBox Height="130" ItemsSource="{Binding UnitTypes}" HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="5,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding TenDonVi, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" FontSize="13"/>
+                                            <Button Grid.Column="1" Content="✕" Width="22" Height="22" Background="Transparent" BorderThickness="0" Foreground="Red" Cursor="Hand"
+                                                    Command="{Binding DataContext.RemoveUnitCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
 
-                    <!-- Tiền khám -->
-                    <StackPanel Margin="0,0,0,20">
-                        <TextBlock Text="Tiền khám"
-                               FontSize="14"/>
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="QUY ĐỊNH THUỐC &amp; ĐƠN GIÁ (QĐ2/QĐ4)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                                    <TextBlock Text=" - Số lượng: " FontSize="13" Opacity="0.7" Margin="5,0,0,0"/>
+                                    <TextBlock Text="{Binding SoLoaiThuoc}" FontSize="13" FontWeight="Bold" Foreground="#3182CE"/>
+                                </StackPanel>
+                            </Grid>
 
-                        <TextBox Width="220"
-                             Height="35"
-                             Margin="0,5,0,0"
-                             Text="{Binding TienKhamText, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1.2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Height="36" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,8,0" Tag="Tên thuốc mới..."
+                                         Text="{Binding NewMedicineText, UpdateSourceTrigger=PropertyChanged}"/>
+                                <ComboBox Grid.Column="1" Height="36" VerticalContentAlignment="Center" Margin="0,0,8,0"
+                                          ItemsSource="{Binding UnitTypes}"
+                                          DisplayMemberPath="TenDonVi"
+                                          SelectedItem="{Binding SelectedUnitForNewMedicine}"/>
+                                <TextBox Grid.Column="2" Height="36" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,8,0" Tag="Giá (VNĐ)..."
+                                         Text="{Binding NewMedicinePriceText, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Grid.Column="3" Content="+ Thêm loại thuốc" Width="140" Height="36" Background="Transparent" Foreground="Green" BorderBrush="Green" BorderThickness="1" Cursor="Hand"
+                                        Command="{Binding AddMedicineCommand}"/>
+                            </Grid>
 
-                    <Separator Margin="0,0,0,15"/>
+                            <ListBox Height="130" ItemsSource="{Binding MedicineTypes}" HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="5,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="100"/>
+                                                <ColumnDefinition Width="140"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding TenThuoc, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" FontSize="13"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding TenDonVi}" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.8" FontSize="13"/>
+                                            <Grid Grid.Column="2" Margin="0,0,15,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Grid.Column="0" Text="{Binding DonGia, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0:F0}}" 
+                                                         FontWeight="SemiBold" VerticalAlignment="Center" HorizontalContentAlignment="Right" Padding="5,2" Height="26"/>
+                                                <TextBlock Grid.Column="1" Text=" đ" Opacity="0.6" VerticalAlignment="Center" Margin="3,0,0,0"/>
+                                            </Grid>
+                                            <Button Grid.Column="3" Content="✕" Width="22" Height="22" Background="Transparent" BorderThickness="0" Foreground="Red" Cursor="Hand"
+                                                    Command="{Binding DataContext.RemoveMedicineCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
 
-                    <!-- Loại bệnh -->
-                    <StackPanel Margin="0,0,0,20">
+                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="10" Padding="20" Margin="0,0,0,25">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="QUY ĐỊNH CÁCH DÙNG (QĐ2)" FontSize="15" FontWeight="Bold" Foreground="{StaticResource PrimaryTextBrush}"/>
+                                    <TextBlock Text=" - Số lượng: " FontSize="13" Opacity="0.7" Margin="5,0,0,0"/>
+                                    <TextBlock Text="{Binding SoCachDung}" FontSize="13" FontWeight="Bold" Foreground="#3182CE"/>
+                                </StackPanel>
+                            </Grid>
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Height="36" VerticalContentAlignment="Center" Padding="10,0" Margin="0,0,10,0" Tag="Nhập hướng dẫn cách dùng mới (Ví dụ: Uống sau ăn)..."
+                                         Text="{Binding NewUsageMethodText, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Grid.Column="1" Content="+ Thêm cách dùng" Width="150" Height="36" Background="Transparent" Foreground="Green" BorderBrush="Green" BorderThickness="1" Cursor="Hand"
+                                        Command="{Binding AddUsageMethodCommand}"/>
+                            </Grid>
+                            <ListBox Height="130" ItemsSource="{Binding UsageMethods}" HorizontalContentAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="5,2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Grid.Column="0" Text="{Binding MoTaCachDung, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" BorderThickness="0" Background="Transparent" FontSize="13"/>
+                                            <Button Grid.Column="1" Content="✕" Width="22" Height="22" Background="Transparent" BorderThickness="0" Foreground="Red" Cursor="Hand"
+                                                    Command="{Binding DataContext.RemoveUsageMethodCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                    </Border>
 
-                        <TextBlock Text="Số loại bệnh"
-                               FontSize="14"/>
-
-                        <TextBox Width="220"
-                             Height="35"
-                             Margin="0,5,0,10"
-                             IsReadOnly="True"
-                             Text="{Binding SoLoaiBenh, Mode=OneWay}"/>
-
-                        <TextBlock Text="Loại bệnh"
-                               FontSize="14"/>
-
-                        <ComboBox Width="220"
-                              Height="35"
-                              Margin="0,5,0,10"
-                              ItemsSource="{Binding DiseaseTypes}"
-                              SelectedItem="{Binding SelectedDiseaseType}"/>
-
-                        <ListBox Width="220"
-                             Height="100"
-                             ItemsSource="{Binding SelectedDiseaseTypes}">
-
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel>
-                                        <Button Content="X"
-                                            Width="24"
-                                            Height="24"
-                                            Margin="5,0,0,0"
-                                            DockPanel.Dock="Right"
-                                            Command="{Binding DataContext.RemoveDiseaseCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-
-                                        <TextBlock Text="{Binding}"
-                                               VerticalAlignment="Center"/>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-
-                        </ListBox>
-
-                        <Button Content="+"
-                            Width="35"
-                            Height="35"
-                            FontSize="20"
-                            Foreground="Green"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            HorizontalAlignment="Left"
-                            Command="{Binding AddDiseaseCommand}"/>
-
-                    </StackPanel>
-
-                    <Separator Margin="0,0,0,15"/>
-
-                    <!-- Loại thuốc -->
-                    <StackPanel Margin="0,0,0,20">
-
-                        <TextBlock Text="Số loại thuốc"
-                               FontSize="14"/>
-
-                        <TextBox Width="220"
-                             Height="35"
-                             Margin="0,5,0,10"
-                             IsReadOnly="True"
-                             Text="{Binding SoLoaiThuoc, Mode=OneWay}"/>
-
-                        <TextBlock Text="Loại thuốc"
-                               FontSize="14"/>
-
-                        <ComboBox Width="220"
-                              Height="35"
-                              Margin="0,5,0,10"
-                              ItemsSource="{Binding MedicineTypes}"
-                              SelectedItem="{Binding SelectedMedicineType}"/>
-
-                        <ListBox Width="220"
-                             Height="100"
-                             ItemsSource="{Binding SelectedMedicineTypes}">
-
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel>
-                                        <Button Content="X"
-                                            Width="24"
-                                            Height="24"
-                                            DockPanel.Dock="Right"
-                                            Margin="5,0,0,0"
-                                            Command="{Binding DataContext.RemoveMedicineCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-
-                                        <TextBlock Text="{Binding}"/>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-
-                        </ListBox>
-
-                        <Button Content="+"
-                            Width="35"
-                            Height="35"
-                            FontSize="20"
-                            Foreground="Green"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            HorizontalAlignment="Left"
-                            Command="{Binding AddMedicineCommand}"/>
-
-                    </StackPanel>
-
-                    <Separator Margin="0,0,0,15"/>
-
-                    <!-- Cách dùng -->
-                    <StackPanel Margin="0,0,0,20">
-
-                        <TextBlock Text="Số cách dùng"
-                               FontSize="14"/>
-
-                        <TextBox Width="220"
-                             Height="35"
-                             Margin="0,5,0,10"
-                             IsReadOnly="True"
-                             Text="{Binding SoCachDung, Mode=OneWay}"/>
-
-                        <TextBlock Text="Cách dùng"
-                               FontSize="14"/>
-
-                        <ComboBox Width="220"
-                              Height="35"
-                              Margin="0,5,0,10"
-                              ItemsSource="{Binding UsageMethods}"
-                              SelectedItem="{Binding SelectedUsageMethod}"/>
-
-                        <ListBox Width="220"
-                             Height="100"
-                             ItemsSource="{Binding SelectedUsageMethods}">
-
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel>
-                                        <Button Content="X"
-                                            Width="24"
-                                            Height="24"
-                                            DockPanel.Dock="Right"
-                                            Margin="5,0,0,0"
-                                            Command="{Binding DataContext.RemoveUsageMethodCommand,
-                                                              RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}"/>
-
-                                        <TextBlock Text="{Binding}"/>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-
-                        </ListBox>
-
-                        <Button Content="+"
-                            Width="35"
-                            Height="35"
-                            FontSize="20"
-                            Foreground="Green"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            HorizontalAlignment="Left"
-                            Command="{Binding AddUsageMethodCommand}"/>
-
-                    </StackPanel>
-
-                    <!-- Button cập nhật -->
-                    <Button Content="Cập nhật"
-                        Style="{StaticResource PrimaryButton}"
-                        HorizontalAlignment="Right"
-                        Margin="0,30,0,0"
-                        Command="{Binding CapNhatCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
-                        />
-
+                    <Button Content="Lưu các thay đổi" 
+                            Style="{StaticResource PrimaryButton}"
+                            Width="200"
+                            Height="42"
+                            HorizontalAlignment="Right"
+                            Command="{Binding CapNhatCommand}"/>
                 </StackPanel>
-
             </ScrollViewer>
         </Border>
+
+        <Grid Background="#A0000000" 
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"
+              Focusable="True">
+            <Border Background="{StaticResource CardBrush}" 
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10" 
+                    Padding="30,20"
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <ProgressBar IsIndeterminate="True" Width="25" Height="25" Margin="0,0,15,0" Foreground="#3182CE"/>
+                    <TextBlock Text="Đang đồng bộ dữ liệu phòng khám, vui lòng đợi..." 
+                               FontSize="14" 
+                               FontWeight="Medium"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource PrimaryTextBrush}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>
