@@ -3,135 +3,86 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClinicManagement.UI.Views.UI.Patient"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="600" d:DesignWidth="600">
+    <Grid Margin="10">
         <Border BorderBrush="{StaticResource BorderBrush}" 
-            BorderThickness="1" 
-            CornerRadius="15" 
-            Background="{StaticResource CardBrush}">
+                BorderThickness="1" 
+                CornerRadius="10" 
+                Background="{StaticResource CardBrush}">
 
-            <Grid Margin="25">
-
+            <Grid Margin="15">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Header -->
-                <StackPanel>
-                    
-                    
-                <!-- Back -->
-                    <Button Content="←"
-                            FontSize="30"
-                            Width="40"
-                            Height="40"
-                            HorizontalAlignment="Left"
-                            Background="Transparent"
-                            BorderBrush="Transparent"/>
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Button Content="←" FontSize="16" Width="30" Height="30" 
+                            HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent"
+                            Command="{Binding BackCommand}"/>
+                    <TextBlock Text="Phiếu khám bệnh" FontSize="18" FontWeight="SemiBold" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
 
-                    <TextBlock Text="Phiếu khám bệnh"
-                           FontSize="22"
-                           HorizontalAlignment="Center"/>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10,0" HorizontalAlignment="Stretch">
+                        <StackPanel.Resources>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Height" Value="28"/>
+                                <Setter Property="Margin" Value="0,2,0,8"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                <Setter Property="Padding" Value="5,0"/>
+                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            </Style>
+                        </StackPanel.Resources>
 
-                </StackPanel>
+                        <TextBlock Text="Họ tên" FontSize="12"/>
+                        <TextBox IsReadOnly="True" Text="{Binding BenhNhan.HoTen, Mode=OneWay}"/>
 
-                <!-- Content -->
-                <ScrollViewer Grid.Row="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                <TextBlock Text="Giới tính" FontSize="12"/>
+                                <TextBox IsReadOnly="True" Text="{Binding BenhNhan.GioiTinh, Mode=OneWay}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                                <TextBlock Text="Năm sinh" FontSize="12"/>
+                                <TextBox IsReadOnly="True" Text="{Binding BenhNhan.NamSinh, Mode=OneWay}"/>
+                            </StackPanel>
+                        </Grid>
 
-                    <StackPanel Margin="20">
+                        <TextBlock Text="Ngày khám" FontSize="12"/>
+                        <TextBox IsReadOnly="True" Text="{Binding NgayKham, Mode=OneWay}"/>
 
-                        <TextBlock Text="Họ tên"/>
-                        <TextBox Height="35"
-                                 Width="400"
-                                 IsReadOnly="True"
-                                 HorizontalAlignment="Left"
-                                 />
+                        <TextBlock Text="Chẩn đoán loại bệnh" FontSize="12"/>
+                        <TextBox IsReadOnly="True" Text="{Binding ChanDoanLoaiBenh, Mode=OneWay}" 
+                                 Height="45" AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top"/>
 
-                        <TextBlock Text="Giới tính"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                                 Width="400"
-                                IsReadOnly="True"
-                                HorizontalAlignment="Left"/>
+                        <Separator Margin="0,5,0,10"/>
 
-                        <TextBlock Text="Ngày sinh"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                              Width="400"
-                            IsReadOnly="True"
-                            HorizontalAlignment="Left"/>
+                        <TextBlock Text="Đơn thuốc" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,0,0,5"/>
 
-                        <TextBlock Text="Ngày khám"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                              Width="400"
-                            IsReadOnly="True"
-                            HorizontalAlignment="Left"/>
-
-                        <TextBlock Text="Triệu chứng"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                              Width="400"
-                            IsReadOnly="True"
-                            HorizontalAlignment="Left"/>
-
-                        <TextBlock Text="Chẩn đoán"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                              Width="400"
-                            IsReadOnly="True"
-                            HorizontalAlignment="Left"/>
-
-                        <TextBlock Text="Loại bệnh"
-                               Margin="0,10,0,0"/>
-                        <TextBox Height="35"
-                              Width="400"
-                            IsReadOnly="True"
-                            HorizontalAlignment="Left"/>
-
-                        <Separator Margin="0,20"/>
-
-                        <TextBlock Text="Đơn thuốc"
-                               FontWeight="SemiBold"
-                               HorizontalAlignment="Center"
-                               Margin="0,0,0,15"/>
-
-                        <DataGrid ItemsSource="{Binding PrescriptionDetails}"
-                              AutoGenerateColumns="False"
-                              CanUserAddRows="False">
-
+                        <DataGrid ItemsSource="{Binding PrescriptionDetails, Mode=OneWay}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          RowHeight="30"
+                          FontSize="12"
+                          HorizontalAlignment="Stretch">
                             <DataGrid.Columns>
-
-                                <DataGridTextColumn Header="Thuốc"
-                                                Width="*"
-                                                Binding="{Binding MedicineName}"/>
-
-                                <DataGridTextColumn Header="Đơn vị"
-                                                Width="120"
-                                                Binding="{Binding Unit}"/>
-
-                                <DataGridTextColumn Header="Số lượng"
-                                                Width="120"
-                                                Binding="{Binding Quantity}"/>
-
-                                <DataGridTextColumn Header="Cách dùng"
-                                                Width="200"
-                                                Binding="{Binding Usage}"/>
-
+                                <DataGridTextColumn Header="Tên thuốc" Width="*" Binding="{Binding SelectedThuoc.TenThuoc, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Đơn vị" Width="60" Binding="{Binding DonViTinh, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="SL" Width="40" Binding="{Binding SoLuong, Mode=OneWay}"/>
+                                <DataGridTextColumn Header="Cách dùng" Width="1.5*" Binding="{Binding SelectedCachDung.MoTaCachDung, Mode=OneWay}"/>
                             </DataGrid.Columns>
-
                         </DataGrid>
-
                     </StackPanel>
-
                 </ScrollViewer>
-
             </Grid>
-
-
         </Border>
     </Grid>
 </UserControl>

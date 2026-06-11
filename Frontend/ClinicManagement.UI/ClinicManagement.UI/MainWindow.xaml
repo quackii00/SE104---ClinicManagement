@@ -28,6 +28,9 @@
         <DataTemplate DataType="{x:Type vm:PrescriptionViewModel}">
             <patient:PrescriptionView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MedicalRecordViewModel}">
+            <patient:MedicalRecord />
+        </DataTemplate>
 
         <DataTemplate DataType="{x:Type vm:RecievePatientViewModel}">
             <patient:RecievePatient />
@@ -54,15 +57,18 @@
         <Border BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="15"
+                ClipToBounds="True"
                 Background="{StaticResource CardBrush}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <components:Sidebar Grid.Column="0" 
-                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                    Width="180"
+                                    VerticalAlignment="Stretch"
+                                    DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"/>
 
                 <ContentControl x:Name="MainContent"
                                 Grid.Column="1"
