@@ -22,7 +22,8 @@ namespace ClinicManagement.UI.Views.Components
         public Sidebar()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+            // KHÔNG tạo MainWindowViewModel ở đây: MainWindow.xaml đã bind DataContext của Sidebar
+            // về VM của cửa sổ (RelativeSource AncestorType=Window). Tạo lại sẽ dựng VM thừa.
         }
     }
 }

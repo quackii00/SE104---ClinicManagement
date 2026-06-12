@@ -127,9 +127,10 @@ namespace ClinicManagement.UI.ViewModels
 
         private string selectedPatient_GetDiaChiSafe(List<LichSuKhamDto> list)
         {
-            return AppState.Instance.DanhSachKhamHienTai?.ChiTietDanhSach?
-                .Find(p => p.BenhNhan?.MaBenhNhan == _maBenhNhan)?.BenhNhan?.DiaChi
-                ?? "KTX Khu A - ĐHQG TP.HCM";
+            // Lấy địa chỉ thật từ danh sách khám trong ngày nếu có; KHÔNG dùng địa chỉ giả.
+            var diaChi = AppState.Instance.DanhSachKhamHienTai?.ChiTietDanhSach?
+                .Find(p => p.BenhNhan?.MaBenhNhan == _maBenhNhan)?.BenhNhan?.DiaChi;
+            return string.IsNullOrWhiteSpace(diaChi) ? "Chưa cập nhật địa chỉ thường trú." : diaChi;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null) =>

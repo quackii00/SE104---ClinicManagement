@@ -9,6 +9,7 @@ namespace ClinicManagement.UI.Models
         public string GioiTinh { get; set; }
         public int NamSinh { get; set; }
         public string DiaChi { get; set; }
+        public string SoDienThoai { get; set; }
 
         public bool KiemTraThongTinHopLe()
         {

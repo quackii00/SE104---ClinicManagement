@@ -11,6 +11,15 @@ namespace ClinicManagement.UI
 
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
+            // (NFR Độ tin cậy) Cảnh báo rõ ràng cho người dùng khi mất kết nối máy chủ,
+            // thay vì để màn hình hiển thị trống/0 mà không báo gì.
+            BaseApiService.ConnectionError += message =>
+            {
+                Current?.Dispatcher.Invoke(() =>
+                    MessageBox.Show(message, "Mất kết nối máy chủ",
+                        MessageBoxButton.OK, MessageBoxImage.Warning));
+            };
+
             try
             {
                 string savedToken = _tokenStorageService.GetToken();

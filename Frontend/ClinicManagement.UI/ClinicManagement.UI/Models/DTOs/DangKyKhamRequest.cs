@@ -14,6 +14,9 @@ namespace ClinicManagement.UI.DTOs
         public int NamSinh { get; set; }
         public string DiaChi { get; set; }
 
+        // Số điện thoại (dùng để nhận diện/tra cứu hồ sơ bệnh nhân cũ)
+        public string SoDienThoai { get; set; }
+
         // Ngày đăng ký khám (Mặc định là ngày hôm nay)
         public DateTime NgayKham { get; set; }
     }

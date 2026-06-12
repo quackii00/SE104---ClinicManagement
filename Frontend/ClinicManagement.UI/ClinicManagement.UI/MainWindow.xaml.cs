@@ -17,12 +17,11 @@ namespace ClinicManagement.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Trong MainWindow.xaml.cs
         public MainWindow()
         {
             InitializeComponent();
-            // Tạo duy nhất 1 instance và gán cho nó
-            this.DataContext = new MainWindowViewModel();
+            // DataContext (MainWindowViewModel) được tạo DUY NHẤT 1 lần trong MainWindow.xaml (<Window.DataContext>).
+            // Không tạo lại ở đây để tránh dựng nhiều ViewModel và gọi API khởi động trùng lặp.
         }
     }
 }

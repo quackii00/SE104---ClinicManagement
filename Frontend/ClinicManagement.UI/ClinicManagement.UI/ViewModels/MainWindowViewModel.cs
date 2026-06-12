@@ -71,7 +71,7 @@ namespace ClinicManagement.UI.ViewModels
                             STT = item.STT,
                             TrangThai = item.TrangThai,
                             MaPhieuKham = item.MaPhieuKham,
-                            BenhNhan = new BenhNhan { MaBenhNhan = item.MaBenhNhan, HoTen = item.HoTen, GioiTinh = item.GioiTinh, NamSinh = item.NamSinh, DiaChi = item.DiaChi }
+                            BenhNhan = new BenhNhan { MaBenhNhan = item.MaBenhNhan, HoTen = item.HoTen, GioiTinh = item.GioiTinh, NamSinh = item.NamSinh, DiaChi = item.DiaChi, SoDienThoai = item.SoDienThoai }
                         });
                     }
                     AppState.Instance.SoLuongToiDaHeThong = responseData.SoBenhNhanToiDaNgay;

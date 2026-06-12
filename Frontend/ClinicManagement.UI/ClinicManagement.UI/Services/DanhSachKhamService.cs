@@ -62,8 +62,20 @@ namespace ClinicManagement.UI.Services
             }
         }
         /// <summary>
-        /// 🌟 ĐÃ SỬA: Bỏ hoàn toàn số điện thoại, chỉ tra cứu hồ sơ cũ theo Họ Tên khớp với Backend
+        /// POST: api/danhsachkham/dangkham/{maBenhNhan}
+        /// Đánh dấu bệnh nhân "Đang khám" khi bác sĩ mở phiếu khám (Chờ khám -> Đang khám).
         /// </summary>
-       
+        public async Task BatDauKhamAsync(string maBenhNhan)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(maBenhNhan)) return;
+                await PostAsync<object, MessageResponse>($"danhsachkham/dangkham/{Uri.EscapeDataString(maBenhNhan)}", new { });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DanhSachKhamService] Lỗi BatDauKhamAsync: {ex.Message}");
+            }
+        }
     }
 }

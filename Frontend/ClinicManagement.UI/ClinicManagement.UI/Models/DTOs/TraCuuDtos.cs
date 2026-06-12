@@ -14,9 +14,21 @@ namespace ClinicManagement.UI.DTOs
         public string GioiTinh { get; set; } = string.Empty;
         public int NamSinh { get; set; }
         public string? DiaChi { get; set; }
+        public string? SoDienThoai { get; set; }
         public DateTime NgayKham { get; set; }
         public string? TenLoaiBenh { get; set; }
         public string? TrieuChung { get; set; }
+    }
+
+    /// <summary>Thông tin hồ sơ bệnh nhân trả về khi tra theo SĐT (tự điền form Tiếp nhận).</summary>
+    public class BenhNhanInfoDto
+    {
+        public string MaBenhNhan { get; set; } = string.Empty;
+        public string HoTen { get; set; } = string.Empty;
+        public string GioiTinh { get; set; } = string.Empty;
+        public int NamSinh { get; set; }
+        public string? DiaChi { get; set; }
+        public string? SoDienThoai { get; set; }
     }
 
     /// <summary>

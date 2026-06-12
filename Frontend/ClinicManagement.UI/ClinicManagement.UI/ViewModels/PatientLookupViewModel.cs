@@ -18,21 +18,30 @@ namespace ClinicManagement.UI.ViewModels
     {
         private readonly MainWindowViewModel _mainWindowViewModel;
         private readonly TraCuuService _traCuuService;
+        private readonly DanhMucService _danhMucService;
 
         private string _hoTenSearch;
         private string _namSinhSearch;
+        private string _soDienThoaiSearch;
         private bool _isNam;
         private bool _isNu;
         private DateTime? _ngayKhamSearch;
         private bool _isSearching;
 
         private ObservableCollection<TraCuuBenhNhanResultDto> _patients = new ObservableCollection<TraCuuBenhNhanResultDto>();
+        private ObservableCollection<LoaiBenhDto> _loaiBenhList = new ObservableCollection<LoaiBenhDto>();
+        private LoaiBenhDto _selectedLoaiBenh;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         // --- BINDING CÁC THAM SỐ TÌM KIẾM ---
         public string HoTenSearch { get => _hoTenSearch; set { _hoTenSearch = value; OnPropertyChanged(); } }
         public string NamSinhSearch { get => _namSinhSearch; set { _namSinhSearch = value; OnPropertyChanged(); } }
+        public string SoDienThoaiSearch { get => _soDienThoaiSearch; set { _soDienThoaiSearch = value; OnPropertyChanged(); } }
+
+        // Danh mục loại bệnh để lọc (mục đầu "Tất cả" = không lọc).
+        public ObservableCollection<LoaiBenhDto> LoaiBenhList { get => _loaiBenhList; set { _loaiBenhList = value; OnPropertyChanged(); } }
+        public LoaiBenhDto SelectedLoaiBenh { get => _selectedLoaiBenh; set { _selectedLoaiBenh = value; OnPropertyChanged(); } }
 
         public bool IsNam
         {
@@ -72,11 +81,27 @@ namespace ClinicManagement.UI.ViewModels
         {
             _mainWindowViewModel = mainWindowViewModel;
             _traCuuService = new TraCuuService();
+            _danhMucService = new DanhMucService();
 
             TimKiemCommand = new RelayCommand(async o => await ExecuteTimKiemAsync());
 
             _isNam = false;
             _isNu = false;
+
+            _ = LoadLoaiBenhAsync();
+        }
+
+        /// <summary>Nạp danh mục loại bệnh cho bộ lọc (kèm mục "Tất cả" = không lọc).</summary>
+        private async Task LoadLoaiBenhAsync()
+        {
+            var list = await _danhMucService.GetLoaiBenhAsync();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                LoaiBenhList.Clear();
+                LoaiBenhList.Add(new LoaiBenhDto { Id = 0, TenLoaiBenh = "Tất cả" });
+                foreach (var lb in list) LoaiBenhList.Add(lb);
+                SelectedLoaiBenh = LoaiBenhList[0];
+            });
         }
 
         /// <summary>
@@ -100,13 +125,16 @@ namespace ClinicManagement.UI.ViewModels
                 if (IsNam) gioiTinh = "Nam";
                 else if (IsNu) gioiTinh = "Nữ";
 
+                string soDienThoai = string.IsNullOrWhiteSpace(SoDienThoaiSearch) ? null : SoDienThoaiSearch.Trim();
+                int? loaiBenhId = (SelectedLoaiBenh != null && SelectedLoaiBenh.Id > 0) ? SelectedLoaiBenh.Id : (int?)null;
+
                 DateTime? ngayKhamYeuCau = null;
                 if (NgayKhamSearch.HasValue)
                 {
                     ngayKhamYeuCau = DateTime.SpecifyKind(NgayKhamSearch.Value.Date, DateTimeKind.Utc);
                 }
 
-                var resultList = await _traCuuService.TraCuuBenhNhanAsync(hoTen, namSinh, gioiTinh, ngayKhamYeuCau);
+                var resultList = await _traCuuService.TraCuuBenhNhanAsync(hoTen, namSinh, gioiTinh, ngayKhamYeuCau, soDienThoai, loaiBenhId);
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -123,6 +151,7 @@ namespace ClinicManagement.UI.ViewModels
                                 HoTen = item.HoTen,
                                 GioiTinh = item.GioiTinh,
                                 NamSinh = item.NamSinh,
+                                SoDienThoai = item.SoDienThoai,
                                 NgayKham = item.NgayKham,
                                 TenLoaiBenh = string.IsNullOrEmpty(item.TenLoaiBenh) ? "Chưa có" : item.TenLoaiBenh,
                                 TrieuChung = string.IsNullOrEmpty(item.TrieuChung) ? "Không có" : item.TrieuChung

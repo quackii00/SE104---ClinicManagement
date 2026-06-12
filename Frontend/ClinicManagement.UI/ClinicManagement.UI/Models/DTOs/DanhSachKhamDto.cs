@@ -27,6 +27,7 @@ namespace ClinicManagement.UI.DTOs
         public string GioiTinh { get; set; }
         public int NamSinh { get; set; }
         public string DiaChi { get; set; }
+        public string SoDienThoai { get; set; }
         public string MaPhieuKham { get; set; } // Dùng để đếm xem bao nhiêu người đã lập phiếu khám
     }
 }

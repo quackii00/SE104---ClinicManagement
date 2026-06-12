@@ -101,7 +101,8 @@ namespace ClinicManagement.UI.ViewModels
                                 HoTen = item.HoTen,
                                 GioiTinh = item.GioiTinh,
                                 NamSinh = item.NamSinh,
-                                DiaChi = item.DiaChi
+                                DiaChi = item.DiaChi,
+                                SoDienThoai = item.SoDienThoai
                             }
                         };
                         danhSachModel.ChiTietDanhSach.Add(patientItem);
@@ -156,10 +157,18 @@ namespace ClinicManagement.UI.ViewModels
             // 🌟 1. BÁC SĨ CLICK -> VÀO TRANG KHÁM BỆNH
             if (role.Contains("bác sĩ") || role.Contains("doctor") || role.Contains("bacsi"))
             {
-                Dispose();
                 string maPhieuKhamCũ = !string.IsNullOrEmpty(item.MaPhieuKham) ? item.MaPhieuKham : string.Empty;
 
-                // Lưu ý: Nếu code báo đỏ ở dòng này, bạn hãy mở file PrescriptionViewModel.cs ra 
+                // Bệnh nhân chưa lập phiếu & đang "Chờ khám" -> chuyển sang "Đang khám" (3 trạng thái theo BM).
+                if (string.IsNullOrEmpty(maPhieuKhamCũ) && item.TrangThai == "Chờ khám")
+                {
+                    item.TrangThai = "Đang khám";
+                    _ = _danhSachKhamService.BatDauKhamAsync(item.BenhNhan?.MaBenhNhan);
+                }
+
+                Dispose();
+
+                // Lưu ý: Nếu code báo đỏ ở dòng này, bạn hãy mở file PrescriptionViewModel.cs ra
                 // và kiểm tra xem hàm khởi tạo của nó đang yêu cầu truyền vào mấy tham số nhé.
                 _mainViewModel.CurrentView = new PrescriptionViewModel(_mainViewModel, item.BenhNhan, maPhieuKhamCũ);
             }
