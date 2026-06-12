@@ -93,7 +93,7 @@
                     </Style>
                 </TabControl.Resources>
 
-                <TabItem Header="Báo cáo tháng" Height="40">
+                <TabItem Header="Báo cáo doanh thu" Height="40">
                     <views:MonthlyReportView DataContext="{Binding}"/>
                 </TabItem>
 
