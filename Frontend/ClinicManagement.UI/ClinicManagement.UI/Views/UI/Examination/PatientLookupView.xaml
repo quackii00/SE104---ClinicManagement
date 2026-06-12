@@ -67,23 +67,23 @@
                     <Border Grid.Row="0"
                             Background="#D0E7FF"
                             CornerRadius="8,8,0,0"
-                            Padding="30,14,30,14">
+                            Padding="16,14,16,14">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="45"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="1.7*"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="1.5*"/>
+                                <ColumnDefinition Width="1.5*"/>
                                 <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="1.3*"/>
-                                <ColumnDefinition Width="1.6*"/>
-                                <ColumnDefinition Width="1.6*"/>
-                                <ColumnDefinition Width="2.2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="STT" FontWeight="SemiBold" Opacity="0.8" TextTrimming="None"/>
-                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
-                            <TextBlock Grid.Column="2" Text="Năm Sinh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
-                            <TextBlock Grid.Column="3" Text="Ngày Khám" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
-                            <TextBlock Grid.Column="4" Text="Loại Bệnh" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
-                            <TextBlock Grid.Column="5" Text="Triệu Chứng" FontWeight="SemiBold" Opacity="0.8" Margin="0,0,4,0" TextTrimming="None"/>
+                            <TextBlock Grid.Column="0" Text="STT" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" Margin="0,0,6,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="2" Text="Năm Sinh" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" Margin="0,0,6,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="3" Text="Ngày Khám" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" Margin="0,0,6,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="4" Text="Loại Bệnh" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" Margin="0,0,6,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Column="5" Text="Triệu Chứng" FontWeight="SemiBold" FontSize="12.5" Opacity="0.8" Margin="0,0,6,0" VerticalAlignment="Center" TextWrapping="Wrap"/>
                         </Grid>
                     </Border>
 
@@ -95,24 +95,33 @@
                                  SelectedItem="{Binding SelectedPatientItem}"
                                  Background="Transparent"
                                  BorderThickness="0"
-                                 HorizontalContentAlignment="Stretch" 
-                                 Margin="10,5">
+                                 HorizontalContentAlignment="Stretch"
+                                 Margin="0,5">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
 
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="White"
                                             CornerRadius="6"
                                             Margin="0,4"
-                                            Padding="20,12"
+                                            Padding="16,12"
                                             HorizontalAlignment="Stretch">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="45"/>
+                                                <ColumnDefinition Width="40"/>
+                                                <ColumnDefinition Width="1.7*"/>
+                                                <ColumnDefinition Width="1.2*"/>
+                                                <ColumnDefinition Width="1.5*"/>
+                                                <ColumnDefinition Width="1.5*"/>
                                                 <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="1.3*"/>
-                                                <ColumnDefinition Width="1.6*"/>
-                                                <ColumnDefinition Width="1.6*"/>
-                                                <ColumnDefinition Width="2.2*"/>
                                             </Grid.ColumnDefinitions>
 
                                             <TextBlock Grid.Column="0" Text="{Binding STT}" VerticalAlignment="Center" Opacity="0.7"/>
