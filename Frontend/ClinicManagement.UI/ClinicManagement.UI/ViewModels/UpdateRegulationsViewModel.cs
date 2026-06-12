@@ -120,6 +120,7 @@ namespace ClinicManagement.UI.ViewModels
                     SoBenhNhanToiDaText = ts.SoBenhNhanToiDaNgay.ToString(CultureInfo.InvariantCulture);
                     TienKhamText = ts.TienKham.ToString(CultureInfo.InvariantCulture);
                     AppState.Instance.SoLuongToiDaHeThong = ts.SoBenhNhanToiDaNgay;
+                    AppState.Instance.TienKhamHeThong = ts.TienKham;
                 }
 
                 // 2. Tải danh mục Loại bệnh
@@ -176,6 +177,10 @@ namespace ClinicManagement.UI.ViewModels
                 NewDiseaseText = string.Empty;
                 UpdateCounts();
             }
+            else
+            {
+                ShowAddError("loại bệnh");
+            }
             IsBusy = false;
         }
 
@@ -184,11 +189,15 @@ namespace ClinicManagement.UI.ViewModels
             if (item == null) return;
             IsBusy = true;
 
-            var response = await _quyDinhService.DeleteLoaiBenhAsync(item.Id); // 🌟 FIX: Đổi từ item.Id thành MaLoaiBenh
-            if (response != null && !response.Message.Contains("thất bại"))
+            var (success, message) = await _quyDinhService.DeleteLoaiBenhAsync(item.Id);
+            if (success)
             {
                 DiseaseTypes.Remove(item);
                 UpdateCounts();
+            }
+            else
+            {
+                MessageBox.Show(message, "Không thể xóa loại bệnh", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             IsBusy = false;
         }
@@ -230,6 +239,10 @@ namespace ClinicManagement.UI.ViewModels
                 SelectedUnitForNewMedicine = null;
                 UpdateCounts();
             }
+            else
+            {
+                ShowAddError("thuốc");
+            }
             IsBusy = false;
         }
 
@@ -238,11 +251,15 @@ namespace ClinicManagement.UI.ViewModels
             if (item == null) return;
             IsBusy = true;
 
-            var response = await _quyDinhService.DeleteThuocAsync(item.Id); // 🌟 FIX: Đổi từ item.Id thành MaThuoc
-            if (response != null && !response.Message.Contains("thất bại"))
+            var (success, message) = await _quyDinhService.DeleteThuocAsync(item.Id);
+            if (success)
             {
                 MedicineTypes.Remove(item);
                 UpdateCounts();
+            }
+            else
+            {
+                MessageBox.Show(message, "Không thể xóa thuốc", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             IsBusy = false;
         }
@@ -261,6 +278,10 @@ namespace ClinicManagement.UI.ViewModels
                 NewUnitText = string.Empty;
                 UpdateCounts();
             }
+            else
+            {
+                ShowAddError("đơn vị tính");
+            }
             IsBusy = false;
         }
 
@@ -269,11 +290,15 @@ namespace ClinicManagement.UI.ViewModels
             if (item == null) return;
             IsBusy = true;
 
-            var response = await _quyDinhService.DeleteDonViAsync(item.Id); // 🌟 FIX: Đổi từ item.Id thành MaDonVi
-            if (response != null && !response.Message.Contains("thất bại"))
+            var (success, message) = await _quyDinhService.DeleteDonViAsync(item.Id);
+            if (success)
             {
                 UnitTypes.Remove(item);
                 UpdateCounts();
+            }
+            else
+            {
+                MessageBox.Show(message, "Không thể xóa đơn vị tính", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             IsBusy = false;
         }
@@ -292,6 +317,10 @@ namespace ClinicManagement.UI.ViewModels
                 NewUsageMethodText = string.Empty;
                 UpdateCounts();
             }
+            else
+            {
+                ShowAddError("cách dùng");
+            }
             IsBusy = false;
         }
 
@@ -300,13 +329,30 @@ namespace ClinicManagement.UI.ViewModels
             if (item == null) return;
             IsBusy = true;
 
-            var response = await _quyDinhService.DeleteCachDungAsync(item.Id); // 🌟 FIX: Đổi từ item.Id thành MaCachDung
-            if (response != null && !response.Message.Contains("thất bại"))
+            var (success, message) = await _quyDinhService.DeleteCachDungAsync(item.Id);
+            if (success)
             {
                 UsageMethods.Remove(item);
                 UpdateCounts();
             }
+            else
+            {
+                MessageBox.Show(message, "Không thể xóa cách dùng", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
             IsBusy = false;
+        }
+
+        // Hiện đúng lý do server từ chối thêm (vd: tên đã tồn tại) thay vì im lặng không làm gì.
+        private void ShowAddError(string tenDanhMuc)
+        {
+            var lyDo = _quyDinhService.LastErrorMessage;
+            MessageBox.Show(
+                string.IsNullOrWhiteSpace(lyDo)
+                    ? $"Thêm {tenDanhMuc} thất bại. Có thể tên đã tồn tại hoặc dữ liệu không hợp lệ."
+                    : lyDo,
+                "Thêm thất bại",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
         }
 
         // ==================== NÚT LƯU THAM SỐ CHÍNH & GIÁ THUỐC (PUT) ====================
@@ -338,7 +384,9 @@ namespace ClinicManagement.UI.ViewModels
 
                 if (resultParam != null)
                 {
+                    // Phát tín hiệu cho các màn hình khác cập nhật ngay (QĐ1 + QĐ4)
                     AppState.Instance.SoLuongToiDaHeThong = resultParam.SoBenhNhanToiDaNgay;
+                    AppState.Instance.TienKhamHeThong = resultParam.TienKham;
                 }
 
                 // 🌟 2. CHÌA KHÓA PHÁ ÁN: Duyệt danh sách thuốc để lưu lại toàn bộ đơn giá/tên thuốc vừa sửa đổi trực tiếp trên lưới (QĐ4)
@@ -353,6 +401,26 @@ namespace ClinicManagement.UI.ViewModels
 
                     // Gọi endpoint PUT: api/quydinh/thuoc/{id} ở Backend để lưu
                     await _quyDinhService.UpdateThuocAsync(thuoc.Id, requestThuoc);
+                }
+
+                // 🌟 3. FIX: Lưu luôn các chỉnh sửa tên gõ trực tiếp trên lưới của Loại bệnh / Đơn vị / Cách dùng.
+                // Trước đây các sửa đổi này KHÔNG được gửi lên Server nên sau khi LoadAsync() sẽ bị quay về giá trị cũ.
+                foreach (var loaiBenh in DiseaseTypes)
+                {
+                    await _quyDinhService.UpdateLoaiBenhAsync(loaiBenh.Id,
+                        new UpsertLoaiBenhRequest { TenLoaiBenh = loaiBenh.TenLoaiBenh });
+                }
+
+                foreach (var donVi in UnitTypes)
+                {
+                    await _quyDinhService.UpdateDonViAsync(donVi.Id,
+                        new UpsertDonViRequest { TenDonVi = donVi.TenDonVi });
+                }
+
+                foreach (var cachDung in UsageMethods)
+                {
+                    await _quyDinhService.UpdateCachDungAsync(cachDung.Id,
+                        new UpsertCachDungRequest { MoTaCachDung = cachDung.MoTaCachDung });
                 }
 
                 MessageBox.Show("Cập nhật toàn bộ tham số quy định và đơn giá hệ thống thành công!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);

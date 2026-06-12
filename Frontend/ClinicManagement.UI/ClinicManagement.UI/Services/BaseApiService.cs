@@ -2,12 +2,20 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
+using ClinicManagement.UI.DTOs;
 
 namespace ClinicManagement.UI.Services
 {
     public class BaseApiService
     {
+        /// <summary>
+        /// Thông điệp lỗi gần nhất do Server trả về (lấy từ body { "message": ... } khi POST/PUT thất bại).
+        /// ViewModel đọc giá trị này để hiện đúng lý do cho người dùng thay vì im lặng.
+        /// </summary>
+        public string? LastErrorMessage { get; private set; }
+
         // Tên biến HttpClient trong dự án của bạn là Client.
         // URL gốc KHÔNG hard-code: đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
         protected static readonly HttpClient Client = new HttpClient
@@ -57,6 +65,7 @@ namespace ClinicManagement.UI.Services
             try
             {
                 PrepareAuthHeader();
+                LastErrorMessage = null;
                 var response = await Client.PostAsJsonAsync(endpoint, data);
 
                 // Nếu Server xử lý thành công (Mã 200)
@@ -67,6 +76,7 @@ namespace ClinicManagement.UI.Services
 
                 // 🌟 CHÌA KHÓA PHÁ ÁN: Nếu dính lỗi 400, 403, 500... bốc chuỗi giải thích từ Server ra log
                 var errorContent = await response.Content.ReadAsStringAsync();
+                LastErrorMessage = ExtractMessage(errorContent);
                 System.Diagnostics.Debug.WriteLine("======================= [SERVER BAD REQUEST LOG] =======================");
                 System.Diagnostics.Debug.WriteLine($"[API Error tại Endpoint {endpoint}]: Mã lỗi {response.StatusCode}");
                 System.Diagnostics.Debug.WriteLine($"[Chi tiết lỗi từ Backend]: {errorContent}");
@@ -86,6 +96,7 @@ namespace ClinicManagement.UI.Services
             try
             {
                 PrepareAuthHeader();
+                LastErrorMessage = null;
                 var response = await Client.PutAsJsonAsync(endpoint, requestData);
 
                 if (response.IsSuccessStatusCode)
@@ -94,6 +105,7 @@ namespace ClinicManagement.UI.Services
                 }
 
                 var errorContent = await response.Content.ReadAsStringAsync();
+                LastErrorMessage = ExtractMessage(errorContent);
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] PUT Lỗi Server: {errorContent}");
                 return default;
             }
@@ -123,6 +135,48 @@ namespace ClinicManagement.UI.Services
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối DELETE: {ex.Message}");
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Xóa và trả về (thành công?, thông điệp). Khi bị backend chặn (vd: đang được dùng trong phiếu khám)
+        /// thì lấy đúng lý do từ body { "message": ... } để ViewModel hiện cho người dùng, thay vì im lặng.
+        /// </summary>
+        protected async Task<(bool Success, string Message)> DeleteWithMessageAsync(string endpoint, string defaultSuccessMessage)
+        {
+            try
+            {
+                PrepareAuthHeader(); // 🌟 FIX: trước đây các lệnh xóa gọi thẳng Client.DeleteAsync nên thiếu token
+                var response = await Client.DeleteAsync(endpoint);
+                var body = await response.Content.ReadAsStringAsync();
+                var serverMsg = ExtractMessage(body);
+
+                if (response.IsSuccessStatusCode)
+                    return (true, string.IsNullOrWhiteSpace(serverMsg) ? defaultSuccessMessage : serverMsg!);
+
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] DELETE bị chặn tại {endpoint}: {body}");
+                return (false, string.IsNullOrWhiteSpace(serverMsg) ? "Thao tác xóa thất bại." : serverMsg!);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối DELETE: {ex.Message}");
+                return (false, $"Lỗi kết nối máy chủ: {ex.Message}");
+            }
+        }
+
+        /// <summary>Bóc trường "message" từ body JSON do Server trả về (an toàn với body rỗng / không phải JSON).</summary>
+        private static string? ExtractMessage(string body)
+        {
+            if (string.IsNullOrWhiteSpace(body)) return null;
+            try
+            {
+                var parsed = JsonSerializer.Deserialize<MessageResponse>(body,
+                    new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                return string.IsNullOrWhiteSpace(parsed?.Message) ? null : parsed!.Message;
+            }
+            catch
+            {
+                return null;
             }
         }
     }
