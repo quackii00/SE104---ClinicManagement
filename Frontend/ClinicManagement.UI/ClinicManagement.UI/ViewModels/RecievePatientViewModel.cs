@@ -101,6 +101,19 @@ namespace ClinicManagement.UI.ViewModels
                 return;
             }
 
+            // Số điện thoại bắt buộc khi tiếp nhận, và phải là SĐT Việt Nam hợp lệ (10 chữ số, bắt đầu bằng 0).
+            string sdt = SoDienThoai?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(sdt))
+            {
+                MessageBox.Show("Vui lòng nhập Số điện thoại của bệnh nhân!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(sdt, @"^0\d{9}$"))
+            {
+                MessageBox.Show("Số điện thoại không hợp lệ! Phải gồm 10 chữ số và bắt đầu bằng 0.", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (!int.TryParse(NgaySinhText, out int namSinh))
             {
                 MessageBox.Show("Năm sinh phải là số nguyên hợp lệ!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
