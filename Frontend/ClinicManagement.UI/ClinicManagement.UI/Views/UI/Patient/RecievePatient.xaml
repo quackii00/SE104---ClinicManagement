@@ -16,13 +16,32 @@
                 <Grid Margin="50,40">
                     <StackPanel Width="350" HorizontalAlignment="Center">
 
-                        <TextBlock Text="Tiếp nhận bệnh nhân" 
-                                   FontSize="20" 
-                                   HorizontalAlignment="Center" 
-                                   Margin="0,0,0,35" 
+                        <TextBlock Text="Tiếp nhận bệnh nhân"
+                                   FontSize="20"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,35"
                                    FontWeight="SemiBold"/>
 
-                        <TextBlock Text="Họ tên" Margin="0,0,0,5"/>
+                        <TextBlock Text="Số điện thoại" Margin="0,0,0,5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding SoDienThoai, UpdateSourceTrigger=PropertyChanged}"
+                                     VerticalContentAlignment="Center"
+                                     Height="28"/>
+                            <Button Grid.Column="1"
+                                    Content="Tìm"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Width="70"
+                                    Height="28"
+                                    Margin="8,0,0,0"
+                                    Command="{Binding TimBenhNhanCommand}"/>
+                        </Grid>
+
+                        <TextBlock Text="Họ tên" Margin="0,20,0,5"/>
                         <TextBox Text="{Binding HoTen, UpdateSourceTrigger=PropertyChanged}" 
                                  VerticalContentAlignment="Center" 
                                  Height="28"/>

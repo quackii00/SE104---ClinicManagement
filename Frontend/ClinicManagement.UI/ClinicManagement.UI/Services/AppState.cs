@@ -67,6 +67,9 @@ namespace ClinicManagement.UI.Services
             CurrentUserRoleCode = null;
             DanhSachKhamHienTai = null;
             TongDoanhThuTrongNgay = 0;
+            // Xóa luôn quy định đã nạp để không "rò rỉ" giá trị cũ sang phiên đăng nhập khác.
+            SoLuongToiDaHeThong = 40;
+            TienKhamHeThong = 30000m;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

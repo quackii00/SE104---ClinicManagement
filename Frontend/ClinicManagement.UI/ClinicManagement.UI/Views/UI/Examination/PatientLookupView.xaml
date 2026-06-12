@@ -33,10 +33,23 @@
                              Text="{Binding HoTenSearch, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <TextBlock Text="Năm sinh" Margin="0,15,0,4" Opacity="0.8"/>
-                    <TextBox Height="35" 
-                             VerticalContentAlignment="Center" 
+                    <TextBox Height="35"
+                             VerticalContentAlignment="Center"
                              Padding="8,0"
                              Text="{Binding NamSinhSearch, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Số điện thoại" Margin="0,15,0,4" Opacity="0.8"/>
+                    <TextBox Height="35"
+                             VerticalContentAlignment="Center"
+                             Padding="8,0"
+                             Text="{Binding SoDienThoaiSearch, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Text="Loại bệnh" Margin="0,15,0,4" Opacity="0.8"/>
+                    <ComboBox Height="35"
+                              VerticalContentAlignment="Center"
+                              ItemsSource="{Binding LoaiBenhList}"
+                              SelectedItem="{Binding SelectedLoaiBenh}"
+                              DisplayMemberPath="TenLoaiBenh"/>
 
                     <TextBlock Text="Giới tính" Margin="0,15,0,6" Opacity="0.8"/>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,5">

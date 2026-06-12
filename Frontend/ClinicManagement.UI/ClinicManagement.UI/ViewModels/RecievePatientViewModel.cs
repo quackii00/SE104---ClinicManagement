@@ -21,6 +21,7 @@ namespace ClinicManagement.UI.ViewModels
         private bool _isNam = true;
         private string _ngaySinhText;
         private string _diaChi;
+        private string _soDienThoai;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -35,6 +36,7 @@ namespace ClinicManagement.UI.ViewModels
         public bool IsNu { get => !_isNam; set { _isNam = !value; OnPropertyChanged(); OnPropertyChanged(nameof(IsNam)); } }
         public string NgaySinhText { get => _ngaySinhText; set { _ngaySinhText = value; OnPropertyChanged(); } }
         public string DiaChi { get => _diaChi; set { _diaChi = value; OnPropertyChanged(); } }
+        public string SoDienThoai { get => _soDienThoai; set { _soDienThoai = value; OnPropertyChanged(); } }
 
         public ICommand TimBenhNhanCommand { get; }
         public ICommand ThemCommand { get; }
@@ -68,34 +70,26 @@ namespace ClinicManagement.UI.ViewModels
 
         private async Task ExecuteTimBenhNhanAsync()
         {
-            if (string.IsNullOrWhiteSpace(HoTen))
+            // BM Tiếp nhận: tra cứu hồ sơ cũ THEO SỐ ĐIỆN THOẠI để tự điền thông tin.
+            if (string.IsNullOrWhiteSpace(SoDienThoai))
             {
-                MessageBox.Show("Vui lòng nhập Họ tên để tra cứu!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập Số điện thoại để tra cứu hồ sơ cũ!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            int? namSinh = null;
-            if (!string.IsNullOrWhiteSpace(NgaySinhText) && int.TryParse(NgaySinhText, out int parsedNamSinh))
+            var bn = await _traCuuService.TimBenhNhanTheoSdtAsync(SoDienThoai.Trim());
+
+            if (bn != null)
             {
-                namSinh = parsedNamSinh;
-            }
-
-            string gioiTinh = IsNam ? "Nam" : "Nữ";
-            DateTime ngayKhamChuan = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
-
-            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen.Trim(), namSinh, gioiTinh, ngayKhamChuan);
-
-            if (list != null && list.Count > 0)
-            {
-                var patient = list[0];
-                IsNam = patient.GioiTinh == "Nam";
-                NgaySinhText = patient.NamSinh.ToString();
-                DiaChi = patient.DiaChi;
-                MessageBox.Show("Đã tìm thấy thông tin hồ sơ bệnh nhân cũ.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                HoTen = bn.HoTen;
+                IsNam = bn.GioiTinh == "Nam";
+                NgaySinhText = bn.NamSinh.ToString();
+                DiaChi = bn.DiaChi;
+                MessageBox.Show("Đã tìm thấy hồ sơ bệnh nhân cũ theo số điện thoại.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                MessageBox.Show("Không tìm thấy hồ sơ cũ khớp với các thông tin trên.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Không tìm thấy hồ sơ cũ với số điện thoại này. Vui lòng nhập thông tin mới.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -113,6 +107,14 @@ namespace ClinicManagement.UI.ViewModels
                 return;
             }
 
+            // QĐ/YC1: năm sinh phải từ 1900 đến năm hiện tại (không nhỏ hơn 1900, không ở tương lai).
+            int namHienTai = DateTime.Now.Year;
+            if (namSinh < 1900 || namSinh > namHienTai)
+            {
+                MessageBox.Show($"Năm sinh phải từ 1900 đến {namHienTai}!", "Lỗi nhập liệu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var dsKham = AppState.Instance.DanhSachKhamHienTai;
             int maxPatients = AppState.Instance.SoLuongToiDaHeThong > 0 ? AppState.Instance.SoLuongToiDaHeThong : 40;
             if (dsKham != null && dsKham.ChiTietDanhSach != null && dsKham.ChiTietDanhSach.Count >= maxPatients)
@@ -125,74 +127,35 @@ namespace ClinicManagement.UI.ViewModels
             DateTime localToday = DateTime.Today;
             DateTime ngayKhamChuan = new DateTime(localToday.Year, localToday.Month, localToday.Day, 0, 0, 0, DateTimeKind.Utc);
 
-            var list = await _traCuuService.TraCuuBenhNhanAsync(HoTen.Trim(), namSinh, gioiTinh, ngayKhamChuan);
-            ChiTietKhamItemDto record = null;
-
-            if (list != null && list.Count > 0)
+            // Luôn gọi backend tiếp nhận: server tự DÙNG LẠI hồ sơ cũ nếu trùng SĐT, ngược lại tạo mới.
+            var request = new DangKyKhamRequest
             {
-                var target = list[0];
-                record = new ChiTietKhamItemDto
-                {
-                    MaBenhNhan = target.MaBenhNhan,
-                    HoTen = target.HoTen,
-                    GioiTinh = target.GioiTinh,
-                    NamSinh = target.NamSinh,
-                    DiaChi = target.DiaChi
-                };
-            }
-            else
+                HoTen = HoTen.Trim(),
+                GioiTinh = gioiTinh,
+                NamSinh = namSinh,
+                DiaChi = DiaChi,
+                SoDienThoai = string.IsNullOrWhiteSpace(SoDienThoai) ? null : SoDienThoai.Trim(),
+                NgayKham = ngayKhamChuan
+            };
+
+            var record = await _danhSachKhamService.TiepNhanBenhNhanAsync(request);
+
+            if (record == null)
             {
-                var request = new DangKyKhamRequest
-                {
-                    HoTen = HoTen.Trim(),
-                    GioiTinh = gioiTinh,
-                    NamSinh = namSinh,
-                    DiaChi = DiaChi,
-                    NgayKham = ngayKhamChuan
-                };
-
-                System.Diagnostics.Debug.WriteLine($"====================================");
-                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] localToday: {localToday}");
-                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] ngayKhamChuan: {ngayKhamChuan.ToString("o")}");
-                System.Diagnostics.Debug.WriteLine($"[DEBUG GIỜ C#] request.NgayKham: {request.NgayKham:yyyy-MM-dd HH:mm:ss} Kind: {request.NgayKham.Kind}");
-                System.Diagnostics.Debug.WriteLine($"====================================");
-
-                record = await _danhSachKhamService.TiepNhanBenhNhanAsync(request);
+                // Hiện đúng lý do từ server (vd: đã đủ 40 BN/ngày, bệnh nhân đã có trong danh sách...).
+                string msg = !string.IsNullOrWhiteSpace(_danhSachKhamService.LastErrorMessage)
+                    ? _danhSachKhamService.LastErrorMessage
+                    : "Không thể tiếp nhận bệnh nhân. Vui lòng thử lại.";
+                MessageBox.Show(msg, "Tiếp nhận thất bại", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
 
-            if (record == null) return;
+            MessageBox.Show($"Tiếp nhận thành công bệnh nhân: {record.HoTen}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            if (dsKham != null)
-            {
-                if (dsKham.ChiTietDanhSach == null)
-                {
-                    dsKham.ChiTietDanhSach = new System.Collections.Generic.List<ChiTietDanhSachKham>();
-                }
-
-                var newItem = new ChiTietDanhSachKham
-                {
-                    STT = record.STT > 0 ? record.STT : (dsKham.ChiTietDanhSach.Count + 1),
-                    TrangThai = string.IsNullOrEmpty(record.TrangThai) ? "Chờ khám" : record.TrangThai,
-                    BenhNhan = new BenhNhan
-                    {
-                        MaBenhNhan = record.MaBenhNhan,
-                        HoTen = record.HoTen,
-                        GioiTinh = record.GioiTinh,
-                        NamSinh = record.NamSinh,
-                        DiaChi = record.DiaChi
-                    }
-                };
-
-                dsKham.ChiTietDanhSach.Add(newItem);
-
-                AppState.Instance.TriggerDashboardUpdate();
-
-                MessageBox.Show($"Tiếp nhận thành công bệnh nhân: {record.HoTen}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                var targetPatientListVM = new PatientListViewModel(_mainViewModel);
-                _mainViewModel.CurrentView = targetPatientListVM;
-                await targetPatientListVM.LoadTodayPatientsDataAsync();
-            }
+            // Tải lại danh sách từ server để có STT/SĐT/trạng thái chuẩn (tránh tự dựng item lệch dữ liệu).
+            var targetPatientListVM = new PatientListViewModel(_mainViewModel);
+            _mainViewModel.CurrentView = targetPatientListVM;
+            await targetPatientListVM.LoadTodayPatientsDataAsync();
         }
 
         private async Task ExecuteHuyAsync()

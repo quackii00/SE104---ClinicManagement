@@ -16,6 +16,26 @@ namespace ClinicManagement.UI.Services
         /// </summary>
         public string? LastErrorMessage { get; private set; }
 
+        /// <summary>
+        /// (NFR Độ tin cậy) Phát ra khi không thể kết nối máy chủ / quá thời gian chờ.
+        /// UI (App) đăng ký sự kiện này để hiển thị cảnh báo rõ ràng thay vì để màn hình trống im lặng.
+        /// </summary>
+        public static event Action<string>? ConnectionError;
+
+        private static DateTime _lastConnErrorAt = DateTime.MinValue;
+
+        /// <summary>Phát cảnh báo mất kết nối (chỉ với lỗi kết nối/timeout) và chống spam popup (8 giây/lần).</summary>
+        private static void RaiseConnectionError(Exception ex)
+        {
+            if (ex is not (HttpRequestException or TaskCanceledException or OperationCanceledException))
+                return;
+
+            var now = DateTime.UtcNow;
+            if ((now - _lastConnErrorAt).TotalSeconds < 8) return;
+            _lastConnErrorAt = now;
+            ConnectionError?.Invoke("Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng và thử lại.");
+        }
+
         // Tên biến HttpClient trong dự án của bạn là Client.
         // URL gốc KHÔNG hard-code: đọc từ appsettings.json qua AppConfig (xem Services/AppConfig.cs).
         protected static readonly HttpClient Client = new HttpClient
@@ -53,6 +73,7 @@ namespace ClinicManagement.UI.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi GET: {ex.Message}");
+                RaiseConnectionError(ex);
                 return default;
             }
         }
@@ -87,6 +108,7 @@ namespace ClinicManagement.UI.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối POST bất ngờ: {ex.Message}");
+                RaiseConnectionError(ex);
                 return default;
             }
         }
@@ -112,6 +134,7 @@ namespace ClinicManagement.UI.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối PUT: {ex.Message}");
+                RaiseConnectionError(ex);
                 return default;
             }
         }
@@ -134,6 +157,7 @@ namespace ClinicManagement.UI.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối DELETE: {ex.Message}");
+                RaiseConnectionError(ex);
                 return false;
             }
         }
@@ -160,6 +184,7 @@ namespace ClinicManagement.UI.Services
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[BaseApiService] Lỗi kết nối DELETE: {ex.Message}");
+                RaiseConnectionError(ex);
                 return (false, $"Lỗi kết nối máy chủ: {ex.Message}");
             }
         }

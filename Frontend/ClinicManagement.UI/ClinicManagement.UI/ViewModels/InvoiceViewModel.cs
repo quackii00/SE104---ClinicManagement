@@ -118,10 +118,12 @@ namespace ClinicManagement.UI.ViewModels
                     }
                     else
                     {
+                        // Dùng tiền khám theo quy định hiện hành (QĐ4), không hard-code.
+                        var tienKham = AppState.Instance.TienKhamHeThong;
                         IsPaid = false;
-                        ExaminationFee = 30000;
+                        ExaminationFee = tienKham;
                         TotalMedicineCost = 0;
-                        TotalAmount = 30000;
+                        TotalAmount = tienKham;
                         InvoiceDate = DateTime.Today;
                     }
                 });
@@ -131,9 +133,10 @@ namespace ClinicManagement.UI.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[InvoiceViewModel] Lỗi nạp hóa đơn: {ex.Message}");
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+                    var tienKham = AppState.Instance.TienKhamHeThong;
                     IsPaid = false;
-                    ExaminationFee = 30000;
-                    TotalAmount = 30000;
+                    ExaminationFee = tienKham;
+                    TotalAmount = tienKham;
                     InvoiceDate = DateTime.Today;
                 });
             }

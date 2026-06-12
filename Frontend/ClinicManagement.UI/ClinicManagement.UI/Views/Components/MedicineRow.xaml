@@ -32,6 +32,8 @@
                  Height="28"
                  Margin="5,0"
                  Text="{Binding SoLuong, UpdateSourceTrigger=PropertyChanged}"
+                 PreviewTextInput="SoLuong_PreviewTextInput"
+                 DataObject.Pasting="SoLuong_Pasting"
                  VerticalContentAlignment="Center"
                  HorizontalContentAlignment="Center"/>
 

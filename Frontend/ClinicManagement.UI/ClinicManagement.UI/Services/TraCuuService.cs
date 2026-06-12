@@ -24,7 +24,9 @@ namespace ClinicManagement.UI.Services
         /// GET: api/tracuu/benhnhan?hoTen=...&namSinh=...&gioiTinh=...&ngayKham=yyyy-MM-dd
         /// 🌟 ĐÃ KHỚP CỨNG BACKEND: Chỉ truyền đúng 4 tham số qua query string
         /// </summary>
-        public async Task<List<TraCuuBenhNhanResultDto>> TraCuuBenhNhanAsync(string? hoTen, int? namSinh, string? gioiTinh, DateTime? ngayKham)
+        public async Task<List<TraCuuBenhNhanResultDto>> TraCuuBenhNhanAsync(
+            string? hoTen, int? namSinh, string? gioiTinh, DateTime? ngayKham,
+            string? soDienThoai = null, int? loaiBenhId = null)
         {
             try
             {
@@ -38,6 +40,12 @@ namespace ClinicManagement.UI.Services
 
                 if (!string.IsNullOrWhiteSpace(gioiTinh))
                     queryParams.Add($"gioiTinh={Uri.EscapeDataString(gioiTinh)}");
+
+                if (!string.IsNullOrWhiteSpace(soDienThoai))
+                    queryParams.Add($"soDienThoai={Uri.EscapeDataString(soDienThoai)}");
+
+                if (loaiBenhId.HasValue)
+                    queryParams.Add($"loaiBenhId={loaiBenhId.Value}");
 
                 if (ngayKham.HasValue)
                 {
@@ -57,6 +65,25 @@ namespace ClinicManagement.UI.Services
             {
                 System.Diagnostics.Debug.WriteLine($"[TraCuuService] Lỗi TraCuuBenhNhanAsync: {ex.Message}");
                 return new List<TraCuuBenhNhanResultDto>();
+            }
+        }
+
+        /// <summary>
+        /// GET: api/tracuu/benhnhan/timsdt?soDienThoai=...
+        /// Tìm hồ sơ bệnh nhân gần nhất theo SĐT để tự điền form Tiếp nhận. Trả null nếu chưa có.
+        /// </summary>
+        public async Task<BenhNhanInfoDto?> TimBenhNhanTheoSdtAsync(string soDienThoai)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(soDienThoai)) return null;
+                string url = $"tracuu/benhnhan/timsdt?soDienThoai={Uri.EscapeDataString(soDienThoai.Trim())}";
+                return await GetAsync<BenhNhanInfoDto>(url);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[TraCuuService] Lỗi TimBenhNhanTheoSdtAsync: {ex.Message}");
+                return null;
             }
         }
 
