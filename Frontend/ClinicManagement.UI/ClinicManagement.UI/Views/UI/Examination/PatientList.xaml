@@ -49,38 +49,43 @@
                         BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="1">
 
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Disabled">
+                        <Grid Width="960">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0" Margin="9,0,26,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="40"/>
-                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Row="0" Margin="8,0,8,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="45"/>
+                                    <ColumnDefinition Width="185"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="125"/>
+                                    <ColumnDefinition Width="240"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="45"/>
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="STT" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
-                            <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="Bold" Margin="10,0,5,0" Opacity="0.7"/>
-                            <TextBlock Grid.Column="2" Text="Giới Tính" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
-                            <TextBlock Grid.Column="3" Text="Năm Sinh" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
-                            <TextBlock Grid.Column="4" Text="Địa Chỉ" FontWeight="Bold" Margin="5,0" Opacity="0.7"/>
-                            <TextBlock Grid.Column="5" Text="Trạng Thái" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
-                        </Grid>
+                                <TextBlock Grid.Column="0" Text="STT" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                                <TextBlock Grid.Column="1" Text="Họ Tên" FontWeight="Bold" Margin="10,0,0,0" Opacity="0.7"/>
+                                <TextBlock Grid.Column="2" Text="Giới Tính" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                                <TextBlock Grid.Column="3" Text="Năm Sinh" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                                <TextBlock Grid.Column="4" Text="Số Điện Thoại" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                                <TextBlock Grid.Column="5" Text="Địa Chỉ" FontWeight="Bold" Margin="5,0,0,0" Opacity="0.7"/>
+                                <TextBlock Grid.Column="6" Text="Trạng Thái" FontWeight="Bold" HorizontalAlignment="Center" Opacity="0.7"/>
+                            </Grid>
 
-                        <ListBox Grid.Row="1" 
+                        <ListBox Grid.Row="1"
                                  ItemsSource="{Binding UiPatientsList}"
                                  SelectedItem="{Binding SelectedPatientItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  Background="Transparent"
                                  BorderThickness="0"
                                  HorizontalContentAlignment="Stretch"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
@@ -105,7 +110,8 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                    </Grid>
+                        </Grid>
+                    </ScrollViewer>
                 </Border>
 
                 <Button Grid.Row="3"
