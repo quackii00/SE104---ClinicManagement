@@ -60,7 +60,7 @@
                             </Border>
                         </StackPanel>
 
-                        <StackPanel>
+                        <StackPanel Margin="0,0,0,25">
                             <TextBlock Text="Doanh thu"
                FontSize="18"
                Foreground="{StaticResource PrimaryTextBrush}"
@@ -76,9 +76,21 @@
                             </Border>
                         </StackPanel>
 
-                     
-
-                       
+                        <StackPanel>
+                            <TextBlock Text="Tiền khám (QĐ4)"
+               FontSize="18"
+               Foreground="{StaticResource PrimaryTextBrush}"
+               Margin="0,0,0,8"/>
+                            <Border Width="170" Height="60" CornerRadius="12"
+            BorderBrush="{StaticResource BorderBrush}" BorderThickness="1"
+            Background="{StaticResource CardBrush}">
+                                <TextBlock Text="{Binding TienKhamCoDinh, StringFormat={}{0:N0}đ}"
+                   FontSize="20"
+                   Foreground="{StaticResource SecondaryTextBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
 
                     </StackPanel>
 
