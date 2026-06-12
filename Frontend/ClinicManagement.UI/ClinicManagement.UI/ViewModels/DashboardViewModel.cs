@@ -54,6 +54,7 @@ namespace ClinicManagement.UI.ViewModels
                 {
                     // Lưu vào két sắt chung để các màn hình khác (như UpdateRegulations) dùng ké
                     AppState.Instance.SoLuongToiDaHeThong = thamSo.SoBenhNhanToiDaNgay;
+                    AppState.Instance.TienKhamHeThong = thamSo.TienKham;
                     TienKhamCoDinh = thamSo.TienKham;
                 }
 
@@ -81,6 +82,11 @@ namespace ClinicManagement.UI.ViewModels
                 e.PropertyName == nameof(AppState.Instance.SoLuongToiDaHeThong))
             {
                 RefreshDashboardUI();
+            }
+            // Tiền khám đổi (Admin lưu QĐ4) -> cập nhật ngay thẻ trên Dashboard
+            else if (e.PropertyName == nameof(AppState.Instance.TienKhamHeThong))
+            {
+                TienKhamCoDinh = AppState.Instance.TienKhamHeThong;
             }
         }
 

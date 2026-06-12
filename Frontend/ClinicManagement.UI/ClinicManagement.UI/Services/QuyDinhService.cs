@@ -28,7 +28,9 @@ namespace ClinicManagement.UI.Services
         {
             try
             {
-                return await GetAsync<ThamSoDto>("quydinh");
+                // Dùng endpoint "thamso" (mọi vai trò đọc được) thay vì "quydinh" (chỉ Admin),
+                // để Dashboard của Bác sĩ / Tiếp tân / Kế toán cũng lấy được tiền khám + số BN tối đa.
+                return await GetAsync<ThamSoDto>("thamso");
             }
             catch (Exception ex)
             {
