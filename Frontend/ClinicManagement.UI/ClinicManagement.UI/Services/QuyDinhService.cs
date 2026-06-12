@@ -92,25 +92,10 @@ namespace ClinicManagement.UI.Services
 
         /// <summary>
         /// DELETE: api/quydinh/loaibenh/{id}
+        /// Trả về (thành công?, thông điệp) – lấy đúng lý do từ Server nếu bị chặn xóa.
         /// </summary>
-        public async Task<MessageResponse?> DeleteLoaiBenhAsync(int id)
-        {
-            try
-            {
-                var response = await Client.DeleteAsync($"quydinh/loaibenh/{id}");
-                if (response.IsSuccessStatusCode)
-                {
-                    // Đọc chuỗi json trả về map thành object MessageResponse ("Đã xóa loại bệnh.")
-                    return await response.Content.ReadFromJsonAsync<MessageResponse>();
-                }
-                return new MessageResponse("Xóa loại bệnh thất bại.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteLoaiBenh: {ex.Message}");
-                return new MessageResponse($"Lỗi kết nối: {ex.Message}");
-            }
-        }
+        public Task<(bool Success, string Message)> DeleteLoaiBenhAsync(int id)
+            => DeleteWithMessageAsync($"quydinh/loaibenh/{id}", "Đã xóa loại bệnh.");
 
         // ==========================================
         // 3. DANH MỤC THUỐC (QĐ2 / QĐ4)
@@ -143,16 +128,8 @@ namespace ClinicManagement.UI.Services
         /// <summary>
         /// DELETE: api/quydinh/thuoc/{id}
         /// </summary>
-        public async Task<MessageResponse?> DeleteThuocAsync(int id)
-        {
-            try
-            {
-                var response = await Client.DeleteAsync($"quydinh/thuoc/{id}");
-                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
-                return new MessageResponse("Xóa thuốc thất bại.");
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteThuoc: {ex.Message}"); return new MessageResponse(ex.Message); }
-        }
+        public Task<(bool Success, string Message)> DeleteThuocAsync(int id)
+            => DeleteWithMessageAsync($"quydinh/thuoc/{id}", "Đã xóa thuốc.");
 
         // ==========================================
         // 4. DANH MỤC ĐƠN VỊ TÍNH (QĐ2)
@@ -185,16 +162,8 @@ namespace ClinicManagement.UI.Services
         /// <summary>
         /// DELETE: api/quydinh/donvi/{id}
         /// </summary>
-        public async Task<MessageResponse?> DeleteDonViAsync(int id)
-        {
-            try
-            {
-                var response = await Client.DeleteAsync($"quydinh/donvi/{id}");
-                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
-                return new MessageResponse("Xóa đơn vị tính thất bại.");
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteDonVi: {ex.Message}"); return new MessageResponse(ex.Message); }
-        }
+        public Task<(bool Success, string Message)> DeleteDonViAsync(int id)
+            => DeleteWithMessageAsync($"quydinh/donvi/{id}", "Đã xóa đơn vị tính.");
 
         // ==========================================
         // 5. DANH MỤC CÁCH DÙNG (QĐ2)
@@ -227,15 +196,7 @@ namespace ClinicManagement.UI.Services
         /// <summary>
         /// DELETE: api/quydinh/cachdung/{id}
         /// </summary>
-        public async Task<MessageResponse?> DeleteCachDungAsync(int id)
-        {
-            try
-            {
-                var response = await Client.DeleteAsync($"quydinh/cachdung/{id}");
-                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<MessageResponse>();
-                return new MessageResponse("Xóa cách dùng thất bại.");
-            }
-            catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"[QuyDinhService] Lỗi DeleteCachDung: {ex.Message}"); return new MessageResponse(ex.Message); }
-        }
+        public Task<(bool Success, string Message)> DeleteCachDungAsync(int id)
+            => DeleteWithMessageAsync($"quydinh/cachdung/{id}", "Đã xóa cách dùng.");
     }
 }

@@ -25,6 +25,15 @@ namespace ClinicManagement.UI.Services
             set { _soLuongToiDaHeThong = value; OnPropertyChanged(); }
         }
 
+        // 🌟 Tiền khám hệ thống (QĐ4) – để các màn hình khác cập nhật ngay khi Admin đổi quy định,
+        // tương tự cơ chế của SoLuongToiDaHeThong (QĐ1).
+        private decimal _tienKhamHeThong = 30000m;
+        public decimal TienKhamHeThong
+        {
+            get => _tienKhamHeThong;
+            set { _tienKhamHeThong = value; OnPropertyChanged(); }
+        }
+
         private decimal _tongDoanhThuTrongNgay = 0;
         public decimal TongDoanhThuTrongNgay
         {
